@@ -262,6 +262,36 @@
       cursor:pointer;font-family:inherit;font-weight:700;font-size:.9em
     }
 
+    /* ══ WELCOME BANNER ══ */
+    .welcome-card{
+      background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.8);
+      border-radius:16px;padding:32px 28px;text-align:center;margin-bottom:24px
+    }
+    .welcome-emoji{font-size:2.4em;margin-bottom:10px}
+    .welcome-title{font-size:1.25em;font-weight:800;color:#1a202c;margin-bottom:8px}
+    .welcome-msg{color:#718096;font-size:.92em;line-height:1.6;max-width:460px;margin:0 auto}
+
+    /* ══ RECENT SESSIONS ══ */
+    .recent-header{font-size:.75em;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#a0aec0;margin:24px 0 10px}
+    .recent-entry{
+      display:flex;align-items:center;gap:12px;
+      padding:10px 14px;border-radius:10px;border-left:3px solid;
+      margin-bottom:8px;background:#fff
+    }
+    .recent-area{font-size:.83em;font-weight:700;color:#2d3748;min-width:85px;white-space:nowrap}
+    .recent-task{flex:1;font-size:.83em;color:#718096;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .recent-meta{font-size:.78em;color:#a0aec0;font-weight:600;white-space:nowrap}
+
+    /* ══ AREA RESET ══ */
+    .area-reset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+    @media(max-width:600px){.area-reset-grid{grid-template-columns:1fr}}
+    .btn-area-reset{
+      padding:9px 10px;background:transparent;border:2px solid;
+      border-radius:8px;cursor:pointer;font-family:inherit;font-weight:700;
+      font-size:.82em;transition:opacity .2s
+    }
+    .btn-area-reset:hover{opacity:.65}
+
     /* ══ CELEBRATION OVERLAY ══ */
     .celebration-overlay{
       position:fixed;inset:0;z-index:2000;
@@ -321,6 +351,13 @@
   .tab.active{background:var(--primary);color:#fff}
   #progress.tab-content,#history.tab-content,#settings.tab-content{background:#16162a;box-shadow:0 8px 40px rgba(0,0,0,.55)}
   .tab-content h2{color:#e8e8f4}
+  .welcome-card{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
+  .welcome-title{color:#e8e8f4}
+  .welcome-msg{color:#8888aa}
+  .recent-entry{background:#16162a}
+  .recent-area{color:#e8e8f4}
+  .recent-task{color:#8888aa}
+  .recent-header{color:#4a4a6a}
   .area-card{background:#16162a;border-color:rgba(255,255,255,.06)}
   .area-card::before{background:linear-gradient(135deg,rgba(255,255,255,.03) 0%,transparent)}
   .area-name{color:#8888aa}
@@ -479,7 +516,15 @@
       <div class="stat-pill"><div class="stat-pill-val" id="statSessions">0</div><div class="stat-pill-lbl">Sessions</div></div>
       <div class="stat-pill"><div class="stat-pill-val" id="statStreak">0 🔥</div><div class="stat-pill-lbl">Day Streak</div></div>
     </div>
+    <div id="welcomeBanner" style="display:none">
+      <div class="welcome-card">
+        <div class="welcome-emoji">🎯</div>
+        <div class="welcome-title">Welcome to Vincit</div>
+        <p class="welcome-msg">Pick a focus area below to start your first session. Vincit tracks your time, builds streaks, and keeps you moving.</p>
+      </div>
+    </div>
     <div class="area-cards" id="areaCards"></div>
+    <div id="recentSessions"></div>
   </div>
 
   <!-- ══ TIMER ══ -->
@@ -570,7 +615,8 @@
 
     <div class="settings-section">
       <h3>⚠️ Data</h3>
-      <p>Permanently delete all logged sessions.</p>
+      <p>Delete sessions by area, or wipe everything. This cannot be undone.</p>
+      <div class="area-reset-grid" id="areaResetGrid"></div>
       <button class="btn-danger" onclick="resetAllData()">Reset All Session Data</button>
     </div>
   </div>
@@ -680,7 +726,9 @@ function switchTab(name, el) {
 // ══ HOME ══
 function renderHome() {
   renderDailyStats();
+  document.getElementById('welcomeBanner').style.display = sessions.length === 0 ? 'block' : 'none';
   renderAreaCards();
+  renderRecentSessions();
   const d = new Date();
   document.getElementById('todayDate').textContent =
     d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
@@ -749,6 +797,24 @@ function renderAreaCards() {
     card.onclick = () => openSessionModal(area);
     grid.appendChild(card);
   });
+}
+
+function renderRecentSessions() {
+  const el = document.getElementById('recentSessions');
+  if (!el) return;
+  if (!sessions.length) { el.innerHTML = ''; return; }
+  const recent = sessions.slice().reverse().slice(0, 3);
+  el.innerHTML = '<div class="recent-header">Recent Sessions</div>' +
+    recent.map(s => {
+      const area = AREAS.find(a => a.name === s.area) || {icon:'', color:'#667eea', name: s.area};
+      const d = new Date(s.date);
+      const dateStr = d.toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'});
+      return `<div class="recent-entry" style="border-left-color:${area.color}">
+        <span class="recent-area">${area.icon} ${s.area}</span>
+        <span class="recent-task">${s.task || '—'}</span>
+        <span class="recent-meta">${s.hours.toFixed(1)}h &nbsp;·&nbsp; ${dateStr}</span>
+      </div>`;
+    }).join('');
 }
 
 // ══ SESSION MODAL ══
@@ -1114,6 +1180,7 @@ function renderSettings() {
   renderAreaEditGrid();
   renderGoalGrid();
   renderColorOptions();
+  renderAreaResetGrid();
 }
 
 function renderGoalGrid() {
@@ -1212,6 +1279,33 @@ function applyTheme(t) {
   r.setProperty('--secondary', t.secondary);
   r.setProperty('--bg-light', t.bgLight);
   r.setProperty('--bg-dark', t.bgDark);
+}
+
+function renderAreaResetGrid() {
+  const grid = document.getElementById('areaResetGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  AREAS.forEach(area => {
+    const count = sessions.filter(s => s.area === area.name).length;
+    const btn = document.createElement('button');
+    btn.className = 'btn-area-reset';
+    btn.style.borderColor = area.color;
+    btn.style.color = area.color;
+    btn.textContent = `${area.icon} ${area.name} (${count})`;
+    btn.onclick = () => resetAreaData(area.name);
+    grid.appendChild(btn);
+  });
+}
+
+function resetAreaData(areaName) {
+  const count = sessions.filter(s => s.area === areaName).length;
+  if (!count) { alert(`No sessions logged for ${areaName}.`); return; }
+  if (confirm(`Delete all ${count} session${count > 1 ? 's' : ''} for ${areaName}? This cannot be undone.`)) {
+    sessions = sessions.filter(s => s.area !== areaName);
+    store.set('sessions', sessions);
+    renderHome();
+    renderAreaResetGrid();
+  }
 }
 
 async function resetAllData() {
