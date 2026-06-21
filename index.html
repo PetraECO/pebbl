@@ -309,6 +309,30 @@
       background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
       font-size:.83em;color:rgba(255,255,255,.65);font-weight:500
     }
+    .quick-start-banner{
+      background:linear-gradient(135deg,var(--primary) 0%,var(--secondary) 100%);
+      border-radius:16px;padding:22px 24px;margin-bottom:20px;
+      display:flex;align-items:center;justify-content:space-between;gap:16px;
+      box-shadow:0 6px 28px rgba(102,126,234,.45);
+      cursor:pointer;transition:all .25s;position:relative;overflow:hidden
+    }
+    .quick-start-banner::before{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(135deg,rgba(255,255,255,.12) 0%,transparent 60%);
+      pointer-events:none
+    }
+    .quick-start-banner:hover{transform:translateY(-2px);box-shadow:0 10px 36px rgba(102,126,234,.55)}
+    .quick-start-banner:active{transform:translateY(0)}
+    .quick-start-text{flex:1}
+    .quick-start-label{font-size:.72em;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.7);margin-bottom:4px}
+    .quick-start-heading{font-size:1.15em;font-weight:800;color:#fff;line-height:1.2}
+    .quick-start-area{font-size:.82em;color:rgba(255,255,255,.65);margin-top:3px}
+    .quick-start-cta{
+      flex-shrink:0;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);
+      border-radius:12px;padding:12px 20px;color:#fff;font-family:inherit;
+      font-size:.95em;font-weight:800;white-space:nowrap;transition:all .2s
+    }
+    .quick-start-banner:hover .quick-start-cta{background:rgba(255,255,255,.3)}
     .recent-header{font-size:.72em;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.38);margin:18px 0 10px}
     .recent-entry{
       display:flex;align-items:center;gap:12px;
@@ -1457,17 +1481,42 @@ function renderHomeCard() {
       }).join('')
     : '';
 
-  const showQuickStart = todaySess.length === 0;
+  // ── Quick-start banner (first session of the day) ──
+  let quickBannerHTML = '';
+  if (todaySess.length === 0) {
+    const week2 = getWeekSessions();
+    const mostBehind = AREAS.map(area => {
+      const done = week2.filter(s => s.area === area.name).reduce((s,x) => s + x.hours, 0);
+      const goal = (areaGoals[area.name] || DEFAULT_GOALS[area.name] || {weekly:10}).weekly;
+      return { area, done, goal, pct: done / goal };
+    }).sort((a,b) => a.pct - b.pct)[0];
+    const suggestedArea = mostBehind ? mostBehind.area : AREAS[0];
+    quickBannerHTML = `
+      <div class="quick-start-banner" onclick="quickStart()">
+        <div class="quick-start-text">
+          <div class="quick-start-label">⚡ Quick start</div>
+          <div class="quick-start-heading">Just 5 minutes is enough.</div>
+          <div class="quick-start-area">Suggested: ${suggestedArea.name}</div>
+        </div>
+        <div class="quick-start-cta">Let's go →</div>
+      </div>`;
+  }
+
   el.innerHTML = `
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
-      <div>
-        <div class="home-card-title">${getGreeting()}</div>
-        <div class="home-card-desc">${subLine}</div>
-      </div>
-      ${showQuickStart ? `<button onclick="quickStart()" style="flex-shrink:0;padding:9px 16px;border:none;border-radius:10px;background:var(--primary);color:#fff;font-family:inherit;font-size:.82em;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;box-shadow:0 3px 12px rgba(102,126,234,.4)" onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter=''">Just 5 min →</button>` : ''}
-    </div>
+    <div class="home-card-title">${getGreeting()}</div>
+    <div class="home-card-desc">${subLine}</div>
     ${nudge ? `<div class="home-card-nudge">${nudge}</div>` : ''}
     ${recentHTML}`;
+
+  // Insert banner before home card (after it in the DOM)
+  const existingBanner = document.getElementById('quickStartBanner');
+  if (existingBanner) existingBanner.remove();
+  if (quickBannerHTML) {
+    const wrapper = document.createElement('div');
+    wrapper.id = 'quickStartBanner';
+    wrapper.innerHTML = quickBannerHTML;
+    el.parentNode.insertBefore(wrapper, el.nextSibling);
+  }
 }
 
 // ══ QUICK START ══
