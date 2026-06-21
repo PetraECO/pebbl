@@ -135,50 +135,62 @@
 
     /* ══ TIMER ══ */
     .timer-container{
-      text-align:center;padding:40px 30px 30px;
-      background:var(--primary);
-      border-radius:16px;margin-bottom:30px;box-shadow:0 4px 20px rgba(0,0,0,.15)
+      text-align:center;padding:48px 30px 36px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:24px;margin-bottom:30px;
+      position:relative;overflow:hidden
+    }
+    .timer-container::before{
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse 60% 50% at 50% 40%, var(--ring-glow-bg,rgba(102,126,234,.14)) 0%, transparent 70%);
+      pointer-events:none;transition:background .8s
     }
     .timer-session-label{
       display:inline-flex;align-items:center;gap:8px;
-      background:rgba(255,255,255,.18);border-radius:20px;padding:6px 16px;
-      font-size:.85em;font-weight:700;color:#fff;margin-bottom:20px;letter-spacing:.3px
+      background:rgba(255,255,255,.1);border-radius:20px;padding:7px 18px;
+      font-size:.88em;font-weight:700;color:#fff;margin-bottom:16px;letter-spacing:.3px;
+      border:1px solid rgba(255,255,255,.18)
     }
-    .timer-task-label{font-size:.9em;color:rgba(255,255,255,.75);margin-bottom:18px;font-weight:500}
-    .timer-ring-wrapper{position:relative;width:260px;height:260px;margin:0 auto 24px}
+    .timer-task-label{font-size:.95em;color:rgba(255,255,255,.6);margin-bottom:24px;font-weight:500}
+    .timer-ring-wrapper{position:relative;width:310px;height:310px;margin:0 auto 28px}
     .timer-svg{width:100%;height:100%;transform:rotate(-90deg)}
-    .ring-track{fill:none;stroke:rgba(255,255,255,.18);stroke-width:11}
+    .ring-track{fill:none;stroke:rgba(255,255,255,.1);stroke-width:10}
     .ring-progress{
-      fill:none;stroke:#4ade80;stroke-width:11;
+      fill:none;stroke:#4ade80;stroke-width:10;
       stroke-dasharray:753.98;stroke-dashoffset:0;
-      stroke-linecap:round;transition:stroke-dashoffset .9s linear,stroke .6s
+      stroke-linecap:round;transition:stroke-dashoffset .9s linear,stroke .6s,filter .6s
     }
-    .timer-inner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:190px;text-align:center}
-    .timer-display{font-size:3.8em;font-weight:800;color:#fff;font-family:'Courier New',monospace;line-height:1}
-    .timer-phase{font-size:.9em;color:rgba(255,255,255,.85);margin-top:6px;font-weight:600}
+    .timer-inner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:230px;text-align:center}
+    .timer-display{
+      font-size:5em;font-weight:800;color:#fff;
+      font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+      font-variant-numeric:tabular-nums;line-height:1;letter-spacing:-3px
+    }
+    .timer-phase{font-size:.88em;color:rgba(255,255,255,.55);margin-top:10px;font-weight:600;letter-spacing:.3px}
     .timer-options{display:flex;gap:10px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
     .timer-option{
-      padding:8px 20px;background:rgba(255,255,255,.18);color:#fff;
-      border:2px solid rgba(255,255,255,.5);border-radius:8px;cursor:pointer;
+      padding:8px 20px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);
+      border:1px solid rgba(255,255,255,.18);border-radius:8px;cursor:pointer;
       font-weight:600;font-family:inherit;transition:all .2s
     }
-    .timer-option:hover{background:rgba(255,255,255,.28)}
-    .timer-option.active{background:#fff;color:var(--primary)}
+    .timer-option:hover{background:rgba(255,255,255,.16);color:#fff}
+    .timer-option.active{background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.45)}
     .timer-buttons{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
     .btn-white{
-      padding:12px 32px;font-size:1em;border:none;border-radius:10px;cursor:pointer;
+      padding:13px 36px;font-size:1em;border:none;border-radius:12px;cursor:pointer;
       font-weight:700;font-family:inherit;background:#fff;color:var(--primary);
-      box-shadow:0 4px 14px rgba(0,0,0,.15);transition:all .2s
+      box-shadow:0 4px 20px rgba(0,0,0,.25);transition:all .2s
     }
-    .btn-white:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+    .btn-white:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.3)}
     .btn-ghost{
-      padding:12px 22px;font-size:1em;border:2px solid rgba(255,255,255,.6);border-radius:10px;
-      cursor:pointer;font-weight:600;font-family:inherit;background:transparent;color:#fff;transition:all .2s
+      padding:13px 24px;font-size:1em;border:1px solid rgba(255,255,255,.25);border-radius:12px;
+      cursor:pointer;font-weight:600;font-family:inherit;background:rgba(255,255,255,.06);color:#fff;transition:all .2s
     }
     .btn-ghost:hover{background:rgba(255,255,255,.14)}
     .sound-toggle{
       display:flex;align-items:center;justify-content:center;gap:8px;
-      color:rgba(255,255,255,.8);cursor:pointer;margin-top:16px;font-size:.88em
+      color:rgba(255,255,255,.45);cursor:pointer;margin-top:18px;font-size:.85em
     }
     .sound-toggle input{width:auto;cursor:pointer;accent-color:var(--primary)}
     .no-session-msg{
@@ -1006,8 +1018,15 @@ function updateTimerRing() {
   if (!ring) return;
   const total = isWorkPhase ? selectedDuration*60 : BREAK_TIME;
   const p = timeRemaining / total;
+  const color     = p > 0.5 ? '#4ade80' : p > 0.2 ? '#fbbf24' : '#f87171';
+  const glowColor = p > 0.5 ? 'rgba(74,222,128,.22)'  : p > 0.2 ? 'rgba(251,191,36,.22)'  : 'rgba(248,113,113,.22)';
+  const glowDrop  = p > 0.5 ? '0 0 18px rgba(74,222,128,.7)'  : p > 0.2 ? '0 0 18px rgba(251,191,36,.7)'  : '0 0 18px rgba(248,113,113,.7)';
   ring.style.strokeDashoffset = CIRCUMFERENCE * (1 - p);
-  ring.style.stroke = p > 0.5 ? '#4ade80' : p > 0.2 ? '#fbbf24' : '#f87171';
+  ring.style.stroke  = color;
+  ring.style.filter  = `drop-shadow(${glowDrop})`;
+  // Drive the radial background glow
+  const container = document.querySelector('.timer-container');
+  if (container) container.style.setProperty('--ring-glow-bg', glowColor);
 }
 
 function updateTimerDisplay() {
