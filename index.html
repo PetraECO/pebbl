@@ -387,6 +387,42 @@
       background:transparent;color:#fff;transition:all .2s
     }
     .celeb-btn-ghost:hover{background:rgba(255,255,255,.1)}
+  /* ══ SPLASH SCREEN ══ */
+  .splash-overlay{
+    position:fixed;inset:0;z-index:5000;
+    background:#0d0d1f;
+    display:flex;align-items:center;justify-content:center;
+    transition:opacity .5s ease
+  }
+  .splash-overlay.hidden{display:none}
+  .splash-inner{
+    text-align:center;padding:40px 24px;max-width:480px;width:90%
+  }
+  .splash-logo{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:32px}
+  .splash-logo h1{font-size:2.8em;font-weight:800;color:#fff;margin:0;letter-spacing:-.5px}
+  .splash-tagline{
+    font-size:1.25em;font-weight:600;color:rgba(255,255,255,.9);
+    margin-bottom:10px;line-height:1.4
+  }
+  .splash-sub{
+    font-size:.95em;color:rgba(255,255,255,.45);margin-bottom:48px;line-height:1.6
+  }
+  .splash-actions{display:flex;flex-direction:column;gap:12px;max-width:320px;margin:0 auto}
+  .splash-btn-primary{
+    padding:16px;border:none;border-radius:14px;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    color:#fff;font-family:inherit;font-size:1.05em;font-weight:800;
+    cursor:pointer;transition:all .2s;
+    box-shadow:0 6px 24px rgba(102,126,234,.45)
+  }
+  .splash-btn-primary:hover{transform:translateY(-2px);filter:brightness(1.1)}
+  .splash-btn-ghost{
+    padding:14px;border:2px solid rgba(255,255,255,.2);border-radius:14px;
+    background:transparent;color:rgba(255,255,255,.7);font-family:inherit;
+    font-size:1em;font-weight:700;cursor:pointer;transition:all .2s
+  }
+  .splash-btn-ghost:hover{border-color:rgba(255,255,255,.45);color:#fff}
+
   /* ══ ONBOARDING OVERLAY ══ */
   .onboarding-overlay{
     position:fixed;inset:0;z-index:4000;
@@ -545,6 +581,28 @@
 <body>
 
 <!-- ══ AUTH ══ -->
+<!-- ══ SPLASH SCREEN ══ -->
+<div class="splash-overlay hidden" id="splashOverlay">
+  <div class="splash-inner">
+    <div class="splash-logo">
+      <svg width="52" height="52" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="sg" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#667eea"/><stop offset="100%" stop-color="#764ba2"/>
+        </linearGradient></defs>
+        <circle cx="22" cy="22" r="19" stroke="url(#sg)" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-dasharray="110 10" transform="rotate(-90 22 22)"/>
+        <polyline points="12,15 22,31 32,15" stroke="url(#sg)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <h1>Vincit</h1>
+    </div>
+    <div class="splash-tagline">Focus better. Track what matters.</div>
+    <div class="splash-sub">A personal focus tracker built around your areas of work — not endless to-do lists.</div>
+    <div class="splash-actions">
+      <button class="splash-btn-primary" onclick="dismissSplash('signup')">Get started →</button>
+      <button class="splash-btn-ghost" onclick="dismissSplash('signin')">I already have an account</button>
+    </div>
+  </div>
+</div>
+
 <div class="onboarding-overlay hidden" id="authOverlay">
   <div class="onboarding-box">
     <div class="onboarding-logo">
@@ -987,6 +1045,8 @@ async function loadUserData() {
 
 function showApp() {
   document.getElementById('authOverlay').classList.add('hidden');
+  document.getElementById('splashOverlay').classList.add('hidden');
+  store.set('vincit_visited', true);
   const btn = document.getElementById('signOutBtn');
   if (btn) btn.style.display = 'block';
   renderHome();
@@ -994,10 +1054,30 @@ function showApp() {
   updateTimerRing();
 }
 
-function showAuthOverlay() {
-  document.getElementById('authOverlay').classList.remove('hidden');
+function showAuthOverlay(tab) {
+  const hasVisited = store.get('vincit_visited');
+  if (!hasVisited) {
+    // First-time visitor — show splash instead
+    document.getElementById('splashOverlay').classList.remove('hidden');
+  } else {
+    // Returning visitor — go straight to auth
+    document.getElementById('authOverlay').classList.remove('hidden');
+    if (tab) showAuthTab(tab);
+  }
   const btn = document.getElementById('signOutBtn');
   if (btn) btn.style.display = 'none';
+}
+
+function dismissSplash(tab) {
+  store.set('vincit_visited', true);
+  const splash = document.getElementById('splashOverlay');
+  splash.style.opacity = '0';
+  setTimeout(() => {
+    splash.classList.add('hidden');
+    splash.style.opacity = '';
+    document.getElementById('authOverlay').classList.remove('hidden');
+    showAuthTab(tab || 'signup');
+  }, 450);
 }
 
 function migrateSession(s) {
