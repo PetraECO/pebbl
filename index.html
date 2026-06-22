@@ -320,7 +320,21 @@
     .btn-save-goals:hover{background:var(--primary-dark)}
     .area-edit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
     @media(max-width:600px){.area-edit-grid{grid-template-columns:1fr}}
-    .area-edit-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px;border-top:4px solid #667eea}
+    .area-edit-card{
+      background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+      border-radius:12px;padding:16px;border-top:4px solid #667eea;
+      cursor:grab;transition:transform .15s,box-shadow .15s,background .15s
+    }
+    .area-edit-card:active{cursor:grabbing}
+    .area-edit-card.drag-over{
+      background:rgba(102,126,234,.18);border-color:rgba(102,126,234,.5);
+      transform:scale(1.03);box-shadow:0 0 0 2px var(--primary)
+    }
+    .area-edit-card.dragging{opacity:.4}
+    .drag-handle{
+      text-align:center;color:rgba(255,255,255,.2);font-size:.75em;
+      margin-bottom:8px;user-select:none;letter-spacing:2px
+    }
     .area-edit-icon-preview{font-size:1.6em;text-align:center;margin-bottom:10px}
     input[type="color"]{width:44px;height:32px;padding:2px;border-radius:6px;cursor:pointer;border:2px solid rgba(255,255,255,.2);background:none}
     .btn-danger{
@@ -1118,6 +1132,7 @@ let sessionStartedAt  = null;
 let soundEnabled       = true;
 let isPasswordRecovery = false;
 let isSigningUp        = false;
+let dragAreaSrc        = null;
 let audioContext      = null;
 let confettiFrame     = null;
 
@@ -1183,7 +1198,7 @@ async function init() {
 }
 
 async function loadUserData() {
-  // Load settings (areas, goals, profile name)
+  // Load settings (areas, goals, profile name, appearance, theme)
   const { data: settings } = await sb
     .from('user_settings')
     .select('*')
@@ -1192,10 +1207,20 @@ async function loadUserData() {
 
   const existingProfile = store.get('profile') || {};
   if (settings) {
-    if (settings.areas && settings.areas.length === 3) AREAS = settings.areas;
+    if (settings.areas && Array.isArray(settings.areas) && settings.areas.length > 0) AREAS = settings.areas;
     if (settings.goals) areaGoals = settings.goals;
     // Use Supabase name if available, otherwise keep whatever's in localStorage
     store.set('profile', {name: settings.name || existingProfile.name || '', email: currentUser.email});
+    // Restore appearance and theme from cloud (so they survive across devices/browsers)
+    if (settings.appearance) {
+      store.set('appearance', settings.appearance);
+      if (settings.appearance === 'light') document.body.classList.add('light-mode');
+      else document.body.classList.remove('light-mode');
+    }
+    if (settings.theme) {
+      store.set('theme', settings.theme);
+      applyTheme(settings.theme);
+    }
   } else {
     AREAS = [...DEFAULT_AREAS];
     areaGoals = {...DEFAULT_GOALS};
@@ -1527,11 +1552,9 @@ function getProfile() {
 }
 
 async function saveProfileFromSettings() {
-  const name  = document.getElementById('profileName').value.trim();
+  const name = document.getElementById('profileName').value.trim();
   store.set('profile', {name, email: currentUser?.email || ''});
-  if (currentUser) {
-    await sb.from('user_settings').upsert({user_id: currentUser.id, name, updated_at: new Date().toISOString()});
-  }
+  await saveSettings();
   showSettingsToast();
 }
 
@@ -2082,6 +2105,22 @@ function renderHistory() {
   });
 }
 
+// ══ SAVE SETTINGS (always writes full state — prevents partial-upsert resets) ══
+async function saveSettings() {
+  if (!currentUser) return;
+  const profile = store.get('profile') || {};
+  const { error } = await sb.from('user_settings').upsert({
+    user_id:    currentUser.id,
+    name:       profile.name || '',
+    areas:      AREAS,
+    goals:      areaGoals,
+    appearance: store.get('appearance') || 'dark',
+    theme:      store.get('theme') || null,
+    updated_at: new Date().toISOString()
+  });
+  if (error) console.error('saveSettings error:', error);
+}
+
 // ══ SETTINGS ══
 function renderSettings() {
   // Profile
@@ -2125,9 +2164,7 @@ async function saveGoals() {
     const m = parseFloat(document.getElementById(`goal-m-${area.name}`).value);
     if (w > 0 && m > 0) areaGoals[area.name] = {weekly:w, monthly:m};
   });
-  if (currentUser) {
-    await sb.from('user_settings').upsert({user_id: currentUser.id, goals: areaGoals, updated_at: new Date().toISOString()});
-  }
+  await saveSettings();
   showSettingsToast();
 }
 
@@ -2139,7 +2176,10 @@ function renderAreaEditGrid() {
     const card = document.createElement('div');
     card.className = 'area-edit-card';
     card.style.borderTopColor = area.color;
+    card.draggable = true;
+    card.dataset.idx = i;
     card.innerHTML = `
+      <div class="drag-handle">⠿ ⠿ ⠿</div>
       <div class="area-edit-icon-preview">${area.icon}</div>
       <div class="goal-row"><label>Name</label>
         <input type="text" id="aed-name-${i}" value="${area.name}" maxlength="20" style="flex:1;text-align:left">
@@ -2150,6 +2190,36 @@ function renderAreaEditGrid() {
       <div class="goal-row"><label>Colour</label>
         <input type="color" id="aed-color-${i}" value="${area.color}">
       </div>`;
+    card.addEventListener('dragstart', e => {
+      dragAreaSrc = i;
+      setTimeout(() => card.classList.add('dragging'), 0);
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      grid.querySelectorAll('.area-edit-card').forEach(c => c.classList.remove('drag-over'));
+    });
+    card.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      grid.querySelectorAll('.area-edit-card').forEach(c => c.classList.remove('drag-over'));
+      if (dragAreaSrc !== i) card.classList.add('drag-over');
+    });
+    card.addEventListener('drop', e => {
+      e.preventDefault();
+      if (dragAreaSrc === null || dragAreaSrc === i) return;
+      // Capture current edited values before reordering
+      const edited = AREAS.map((a, j) => ({
+        name:  document.getElementById(`aed-name-${j}`)?.value.trim()  || a.name,
+        icon:  document.getElementById(`aed-icon-${j}`)?.value.trim()  || a.icon,
+        color: document.getElementById(`aed-color-${j}`)?.value        || a.color
+      }));
+      const [moved] = edited.splice(dragAreaSrc, 1);
+      edited.splice(i, 0, moved);
+      AREAS = edited;
+      dragAreaSrc = null;
+      renderAreaEditGrid();
+    });
     grid.appendChild(card);
   });
 }
@@ -2168,9 +2238,7 @@ async function saveAreas() {
   });
   areaGoals = newGoals;
   AREAS = newAreas;
-  if (currentUser) {
-    await sb.from('user_settings').upsert({user_id: currentUser.id, areas: AREAS, goals: areaGoals, updated_at: new Date().toISOString()});
-  }
+  await saveSettings();
   showSettingsToast();
 }
 
@@ -2186,9 +2254,7 @@ function renderColorOptions() {
       document.querySelectorAll('.color-option').forEach(o => o.classList.remove('active'));
       el.classList.add('active');
       applyTheme(t); store.set('theme', t);
-      if (currentUser) {
-        await sb.from('user_settings').upsert({user_id: currentUser.id, theme: t, updated_at: new Date().toISOString()});
-      }
+      await saveSettings();
       showSettingsToast();
     };
     c.appendChild(el);
@@ -2221,19 +2287,14 @@ function applyTheme(t) {
 
 // ══ APPEARANCE ══
 async function setAppearance(mode) {
-  if (mode === 'light') {
-    document.body.classList.add('light-mode');
-  } else {
-    document.body.classList.remove('light-mode');
-  }
+  if (mode === 'light') document.body.classList.add('light-mode');
+  else document.body.classList.remove('light-mode');
   store.set('appearance', mode);
   const btnDark = document.getElementById('btnDark');
   const btnLight = document.getElementById('btnLight');
   if (btnDark) btnDark.classList.toggle('active', mode === 'dark');
   if (btnLight) btnLight.classList.toggle('active', mode === 'light');
-  if (currentUser) {
-    await sb.from('user_settings').upsert({user_id: currentUser.id, appearance: mode, updated_at: new Date().toISOString()});
-  }
+  await saveSettings();
 }
 
 function renderAreaResetGrid() {
