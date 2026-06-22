@@ -1096,8 +1096,9 @@ let timerStartTime    = null;
 let pausedTimeRemaining = null;
 let sessionElapsed    = 0; // seconds of work-phase time completed
 let sessionStartedAt  = null;
-let soundEnabled      = true;
+let soundEnabled       = true;
 let isPasswordRecovery = false;
+let isSigningUp        = false;
 let audioContext      = null;
 let confettiFrame     = null;
 
@@ -1148,6 +1149,7 @@ async function init() {
       document.getElementById('authSetNewPw').style.display = '';
     } else if (event === 'SIGNED_IN' && session) {
       if (isPasswordRecovery) return; // Wait — user still needs to set their new password
+      if (isSigningUp) return;        // Mid-signup — let signUp() handle what comes next
       currentUser = session.user;
       await loadUserData();
       showApp();
@@ -1169,15 +1171,16 @@ async function loadUserData() {
     .eq('user_id', currentUser.id)
     .maybeSingle();
 
+  const existingProfile = store.get('profile') || {};
   if (settings) {
     if (settings.areas && settings.areas.length === 3) AREAS = settings.areas;
     if (settings.goals) areaGoals = settings.goals;
-    // Always write profile so greeting never falls back to email
-    store.set('profile', {name: settings.name || '', email: currentUser.email});
+    // Use Supabase name if available, otherwise keep whatever's in localStorage
+    store.set('profile', {name: settings.name || existingProfile.name || '', email: currentUser.email});
   } else {
     AREAS = [...DEFAULT_AREAS];
     areaGoals = {...DEFAULT_GOALS};
-    store.set('profile', {name: '', email: currentUser.email});
+    store.set('profile', {name: existingProfile.name || '', email: currentUser.email});
   }
 
   // Load sessions
@@ -1465,19 +1468,34 @@ async function signUp() {
   if (!name || !email || !password) { errEl.textContent = 'Please fill in all fields.'; errEl.classList.remove('hidden'); return; }
   if (password.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; errEl.classList.remove('hidden'); return; }
   setAuthLoading(true);
+  isSigningUp = true;
   const { data, error } = await sb.auth.signUp({email, password});
-  if (error) { setAuthLoading(false); errEl.textContent = error.message; errEl.classList.remove('hidden'); return; }
+  if (error) {
+    isSigningUp = false;
+    setAuthLoading(false);
+    errEl.textContent = error.message;
+    errEl.classList.remove('hidden');
+    return;
+  }
   // Save name to user_settings immediately
   if (data.user) {
     store.set('profile', {name, email});
     await sb.from('user_settings').upsert({user_id: data.user.id, name, areas: DEFAULT_AREAS, goals: DEFAULT_GOALS, appearance:'dark'});
   }
+  isSigningUp = false;
   setAuthLoading(false);
-  // Show "check your email" screen
-  document.getElementById('authSignUp').style.display = 'none';
-  document.querySelector('.auth-tabs').style.display = 'none';
-  document.getElementById('checkEmailAddr').textContent = `We've sent a confirmation link to ${email}.`;
-  document.getElementById('authCheckEmail').style.display = '';
+  // If email confirmation is off, Supabase signs them in immediately — go straight to app
+  // If email confirmation is on, show the "check your email" screen
+  if (data.session) {
+    currentUser = data.user;
+    await loadUserData();
+    showApp();
+  } else {
+    document.getElementById('authSignUp').style.display = 'none';
+    document.querySelector('.auth-tabs').style.display = 'none';
+    document.getElementById('checkEmailAddr').textContent = `We've sent a confirmation link to ${email}.`;
+    document.getElementById('authCheckEmail').style.display = '';
+  }
 }
 
 async function signOut() {
