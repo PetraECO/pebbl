@@ -243,6 +243,44 @@
       transition:all .2s;display:none
     }
     .btn-end-session:hover{background:rgba(248,113,113,.25);border-color:rgba(248,113,113,.7);color:#fff}
+
+    /* ── PULSING TIMER TAB ── */
+    .tab.session-active{
+      background:#16a34a !important;color:#fff !important;
+      animation:tabPulse 2s ease-in-out infinite
+    }
+    @keyframes tabPulse{
+      0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.7)}
+      50%{box-shadow:0 0 0 10px rgba(34,197,94,0)}
+    }
+
+    /* ── SESSION ACTIVE FLOATING BAR ── */
+    .session-bar{
+      position:fixed;top:0;left:0;right:0;z-index:900;
+      background:linear-gradient(90deg,#15803d,#16a34a);
+      display:none;align-items:center;justify-content:space-between;gap:12px;
+      padding:10px 20px;
+      box-shadow:0 2px 16px rgba(0,0,0,.3)
+    }
+    .session-bar.visible{display:flex}
+    .session-bar-dot{
+      width:8px;height:8px;border-radius:50%;background:#fff;flex-shrink:0;
+      animation:dotPulse 1.2s ease-in-out infinite
+    }
+    @keyframes dotPulse{0%,100%{opacity:1}50%{opacity:.3}}
+    .session-bar-info{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+    .session-bar-area{font-size:.85em;font-weight:700;color:rgba(255,255,255,.85);white-space:nowrap}
+    .session-bar-time{
+      font-size:1em;font-weight:800;color:#fff;
+      font-variant-numeric:tabular-nums;letter-spacing:.5px
+    }
+    .session-bar-btn{
+      flex-shrink:0;padding:6px 14px;background:rgba(255,255,255,.2);
+      border:1.5px solid rgba(255,255,255,.4);border-radius:8px;
+      color:#fff;font-family:inherit;font-size:.82em;font-weight:700;
+      cursor:pointer;white-space:nowrap;transition:all .2s
+    }
+    .session-bar-btn:hover{background:rgba(255,255,255,.35)}
     .sound-toggle{
       display:flex;align-items:center;justify-content:center;gap:8px;
       color:rgba(255,255,255,.45);cursor:pointer;margin-top:18px;font-size:.85em
@@ -815,6 +853,16 @@
   </div>
 </div>
 
+<!-- ══ SESSION ACTIVE BAR ══ -->
+<div class="session-bar" id="sessionBar">
+  <div class="session-bar-dot"></div>
+  <div class="session-bar-info">
+    <span class="session-bar-area" id="sessionBarArea"></span>
+    <span class="session-bar-time" id="sessionBarTime"></span>
+  </div>
+  <button class="session-bar-btn" onclick="switchTab('timer',document.querySelector('[data-tab=timer]'))">⏱ Back to Timer →</button>
+</div>
+
 <!-- ══ SETTINGS TOAST ══ -->
 <div class="settings-toast" id="settingsToast">
   <span class="toast-msg">✓ Settings saved</span>
@@ -996,7 +1044,10 @@
 
   <!-- ══ HISTORY ══ -->
   <div id="history" class="tab-content">
-    <h2>Session History</h2>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px">
+      <h2 style="margin-bottom:0">Session History</h2>
+      <button onclick="downloadHistory()" style="padding:9px 18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:9px;color:rgba(255,255,255,.75);font-family:inherit;font-size:.85em;font-weight:700;cursor:pointer;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.15)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,.08)';this.style.color='rgba(255,255,255,.75)'">⬇ Export CSV</button>
+    </div>
     <div class="session-log" id="sessionLog"></div>
   </div>
 
@@ -1292,6 +1343,33 @@ function migrateSession(s) {
   return { area, task: s.subject || '', hours: s.hours || 0, notes: s.notes || '', date: s.date, pomodoros: s.pomodoros || 0 };
 }
 
+// ══ SESSION ACTIVE UI ══
+function updateSessionActiveUI() {
+  const sessionRunning = isRunning && isWorkPhase && !!activeArea;
+  const onTimerTab = document.getElementById('timer').classList.contains('active');
+
+  // Pulse the timer tab when session is running
+  const timerTab = document.querySelector('[data-tab="timer"]');
+  if (timerTab) timerTab.classList.toggle('session-active', sessionRunning && !onTimerTab);
+
+  // Show floating bar only when running AND not on the timer tab
+  const bar = document.getElementById('sessionBar');
+  if (bar) {
+    if (sessionRunning && !onTimerTab) {
+      bar.classList.add('visible');
+      const m = Math.floor(timeRemaining / 60);
+      const s = timeRemaining % 60;
+      const areaEl = document.getElementById('sessionBarArea');
+      const timeEl = document.getElementById('sessionBarTime');
+      if (areaEl) areaEl.textContent = activeArea;
+      if (timeEl) timeEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')} left`;
+    } else {
+      bar.classList.remove('visible');
+      if (timerTab) timerTab.classList.remove('session-active');
+    }
+  }
+}
+
 // ══ TABS ══
 function switchTab(name, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1302,6 +1380,7 @@ function switchTab(name, el) {
   if (name === 'progress') renderProgress();
   if (name === 'history')  renderHistory();
   if (name === 'settings') renderSettings();
+  updateSessionActiveUI();
 }
 
 // ══ HOME ══
@@ -1858,6 +1937,7 @@ function toggleTimer() {
     timeRemaining = Math.max(0, pausedTimeRemaining - elapsed);
     if (isWorkPhase) sessionElapsed += elapsed;
   }
+  updateSessionActiveUI();
 }
 
 function updateTimer() {
@@ -1886,6 +1966,7 @@ function updateTimer() {
     }
   } else {
     updateTimerDisplay();
+    updateSessionActiveUI();
   }
 }
 
@@ -2337,6 +2418,35 @@ async function resetAllData() {
       alert('All session data reset.');
     }
   }
+}
+
+// ══ EXPORT HISTORY ══
+function downloadHistory() {
+  if (!sessions.length) { alert('No sessions to export yet.'); return; }
+  const headers = ['Date', 'Time', 'Area', 'Task', 'Duration (h)', 'Notes', 'Pomodoros'];
+  const esc = v => `"${String(v || '').replace(/"/g, '""')}"`;
+  const rows = sessions.slice().reverse().map(s => {
+    const d = new Date(s.date);
+    return [
+      d.toLocaleDateString('en-GB'),
+      d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+      esc(s.area),
+      esc(s.task),
+      s.hours.toFixed(2),
+      esc(s.notes),
+      s.pomodoros || 0
+    ].join(',');
+  });
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `pebbl-history-${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 // ══ AUDIO ══
