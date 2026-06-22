@@ -218,6 +218,12 @@
       cursor:pointer;font-weight:600;font-family:inherit;background:rgba(255,255,255,.06);color:#fff;transition:all .2s
     }
     .btn-ghost:hover{background:rgba(255,255,255,.14)}
+    .btn-end-session{
+      padding:13px 24px;font-size:1em;border:1px solid rgba(248,113,113,.45);border-radius:12px;
+      cursor:pointer;font-weight:700;font-family:inherit;background:rgba(248,113,113,.12);color:#fca5a5;
+      transition:all .2s;display:none
+    }
+    .btn-end-session:hover{background:rgba(248,113,113,.25);border-color:rgba(248,113,113,.7);color:#fff}
     .sound-toggle{
       display:flex;align-items:center;justify-content:center;gap:8px;
       color:rgba(255,255,255,.45);cursor:pointer;margin-top:18px;font-size:.85em
@@ -929,6 +935,9 @@
           <button class="btn-ghost" onclick="resetTimer()">Reset</button>
           <button class="btn-ghost" onclick="skipPhase()">Skip Phase</button>
         </div>
+        <div style="display:flex;justify-content:center;margin-top:10px">
+          <button class="btn-end-session" id="endSessionBtn" onclick="endSession()">■ Stop &amp; Save</button>
+        </div>
         <label class="sound-toggle">
           <input type="checkbox" id="soundToggle" checked onchange="toggleSound()">
           <span>Tick sound 🔊</span>
@@ -1088,6 +1097,7 @@ let pausedTimeRemaining = null;
 let sessionElapsed    = 0; // seconds of work-phase time completed
 let sessionStartedAt  = null;
 let soundEnabled      = true;
+let isPasswordRecovery = false;
 let audioContext      = null;
 let confettiFrame     = null;
 
@@ -1113,12 +1123,14 @@ async function init() {
   sb.auth.onAuthStateChange(async (event, session) => {
     if (event === 'PASSWORD_RECOVERY') {
       // User clicked the reset link — show the set-new-password form
+      isPasswordRecovery = true;
       document.getElementById('splashOverlay').classList.add('hidden');
       document.getElementById('authOverlay').classList.remove('hidden');
       document.querySelector('.auth-tabs').style.display = 'none';
       hideAllAuthPanels();
       document.getElementById('authSetNewPw').style.display = '';
     } else if (event === 'SIGNED_IN' && session) {
+      if (isPasswordRecovery) return; // Wait — user still needs to set their new password
       currentUser = session.user;
       await loadUserData();
       showApp();
@@ -1399,7 +1411,14 @@ async function setNewPassword() {
   if (pw.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; errEl.classList.remove('hidden'); return; }
   const { error } = await sb.auth.updateUser({ password: pw });
   if (error) { errEl.textContent = error.message; errEl.classList.remove('hidden'); return; }
-  // Password updated — auth state will fire SIGNED_IN and showApp() will run
+  // Password updated — clear recovery flag, then load app manually
+  isPasswordRecovery = false;
+  const { data: { user } } = await sb.auth.getUser();
+  if (user) {
+    currentUser = user;
+    await loadUserData();
+    showApp();
+  }
 }
 
 function setAuthLoading(on) {
@@ -1705,6 +1724,8 @@ function beginSession() {
     o.classList.toggle('active', parseInt(o.textContent) === selectedDuration);
   });
   document.getElementById('startBtn').textContent = 'Start';
+  const endBtn = document.getElementById('endSessionBtn');
+  if (endBtn) endBtn.style.display = 'block';
 
   closeSessionModal();
   switchTab('timer', document.querySelector('[data-tab="timer"]'));
@@ -1796,8 +1817,26 @@ function resetTimer() {
   isRunning = false; isWorkPhase = true;
   timeRemaining = selectedDuration * 60;
   pomodorosCompleted = 0; sessionElapsed = 0; sessionStartedAt = null;
+  activeArea = ''; activeTask = '';
   updateTimerDisplay();
   document.getElementById('startBtn').textContent = 'Start';
+  const endBtn = document.getElementById('endSessionBtn');
+  if (endBtn) endBtn.style.display = 'none';
+}
+
+function endSession() {
+  if (!activeArea) return;
+  clearInterval(timerInterval);
+  // If currently running, capture the in-progress elapsed time
+  if (isRunning && isWorkPhase) {
+    const elapsed = Math.floor((Date.now() - timerStartTime) / 1000);
+    sessionElapsed += elapsed;
+  }
+  isRunning = false;
+  document.getElementById('startBtn').textContent = 'Start';
+  const endBtn = document.getElementById('endSessionBtn');
+  if (endBtn) endBtn.style.display = 'none';
+  showCelebration(true);
 }
 
 function skipPhase() {
@@ -1866,6 +1905,11 @@ async function saveAndClose() {
   document.getElementById('celebNotes').value = '';
   closeCelebration();
   sessionElapsed = 0; pomodorosCompleted = 0;
+  activeArea = ''; activeTask = '';
+  const endBtn = document.getElementById('endSessionBtn');
+  if (endBtn) endBtn.style.display = 'none';
+  document.getElementById('noSessionMsg').style.display = '';
+  document.getElementById('timerMain').style.display = 'none';
 }
 
 function startBreakFromCeleb() {
