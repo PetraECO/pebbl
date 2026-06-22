@@ -373,6 +373,19 @@
       text-align:center;color:rgba(255,255,255,.2);font-size:.75em;
       margin-bottom:8px;user-select:none;letter-spacing:2px
     }
+
+    /* ── EXPORT BUTTON ── */
+    .btn-export{
+      padding:9px 18px;background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.2);border-radius:9px;
+      color:rgba(255,255,255,.8);font-family:inherit;font-size:.85em;
+      font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap
+    }
+    .btn-export:hover{background:rgba(255,255,255,.16);color:#fff;border-color:rgba(255,255,255,.4)}
+    body.light-mode .btn-export{
+      background:#f4f4f5;border-color:#d4d4d8;color:#52525b
+    }
+    body.light-mode .btn-export:hover{background:#e4e4e7;color:#18181b}
     .area-edit-icon-preview{font-size:1.6em;text-align:center;margin-bottom:10px}
     input[type="color"]{width:44px;height:32px;padding:2px;border-radius:6px;cursor:pointer;border:2px solid rgba(255,255,255,.2);background:none}
     .btn-danger{
@@ -1046,7 +1059,7 @@
   <div id="history" class="tab-content">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px">
       <h2 style="margin-bottom:0">Session History</h2>
-      <button onclick="downloadHistory()" style="padding:9px 18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:9px;color:rgba(255,255,255,.75);font-family:inherit;font-size:.85em;font-weight:700;cursor:pointer;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.15)';this.style.color='#fff'" onmouseout="this.style.background='rgba(255,255,255,.08)';this.style.color='rgba(255,255,255,.75)'">⬇ Export CSV</button>
+      <button class="btn-export" onclick="downloadHistory()">⬇ Export CSV</button>
     </div>
     <div class="session-log" id="sessionLog"></div>
   </div>
@@ -1186,6 +1199,7 @@ let isSigningUp        = false;
 let dragAreaSrc        = null;
 let audioContext      = null;
 let confettiFrame     = null;
+let userDataLoaded     = false; // prevents double-load from onAuthStateChange immediate fire
 
 // ══ INIT ══
 async function init() {
@@ -1216,16 +1230,18 @@ async function init() {
     } else {
       currentUser = session.user;
       await loadUserData();
+      userDataLoaded = true;
       showApp();
     }
   } else {
     showAuthOverlay();
   }
 
-  // Listen for auth changes
+  // Listen for auth changes.
+  // NOTE: Supabase v2 fires SIGNED_IN immediately on registration — userDataLoaded prevents
+  // a redundant second load that can wipe sessions if the query races.
   sb.auth.onAuthStateChange(async (event, session) => {
     if (event === 'PASSWORD_RECOVERY') {
-      // User clicked the reset link — show the set-new-password form
       isPasswordRecovery = true;
       document.getElementById('splashOverlay').classList.add('hidden');
       document.getElementById('authOverlay').classList.remove('hidden');
@@ -1233,16 +1249,20 @@ async function init() {
       hideAllAuthPanels();
       document.getElementById('authSetNewPw').style.display = '';
     } else if (event === 'SIGNED_IN' && session) {
-      if (isPasswordRecovery) return; // Wait — user still needs to set their new password
-      if (isSigningUp) return;        // Mid-signup — let signUp() handle what comes next
+      if (isPasswordRecovery) return;
+      if (isSigningUp) return;
       currentUser = session.user;
-      await loadUserData();
+      if (!userDataLoaded) {
+        await loadUserData();
+        userDataLoaded = true;
+      }
       showApp();
     } else if (event === 'SIGNED_OUT') {
       currentUser = null;
       sessions = [];
       AREAS = [...DEFAULT_AREAS];
       areaGoals = {...DEFAULT_GOALS};
+      userDataLoaded = false;
       showAuthOverlay();
     }
   });
@@ -1697,7 +1717,7 @@ function renderHomeCard() {
   // ── Recent sessions ──
   const recentHTML = sessions.length
     ? '<div class="recent-header">Recent Sessions</div>' +
-      sessions.slice().reverse().slice(0, 3).map(s => {
+      sessions.slice(0, 3).map(s => {
         const area = AREAS.find(a => a.name === s.area) || {icon:'', color:'#667eea', name: s.area};
         const d = new Date(s.date);
         const dateStr = d.toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'});
