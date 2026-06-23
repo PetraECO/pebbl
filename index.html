@@ -396,6 +396,39 @@
       background:#f4f4f5;border-color:#d4d4d8;color:#52525b
     }
     body.light-mode .btn-export:hover{background:#e4e4e7;color:#18181b}
+
+    /* ── FOCUS TAB ── */
+    .focus-greeting{font-size:1.4em;font-weight:800;color:#fff;margin-bottom:6px}
+    .focus-nudge{font-size:.98em;font-weight:500;color:rgba(255,255,255,.55);margin-bottom:30px;min-height:1.4em;transition:opacity .5s ease;line-height:1.5}
+    .focus-area-label{font-size:.72em;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.35);margin-bottom:12px}
+    .focus-area-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;margin-bottom:20px}
+    .focus-area-card{display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 10px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.07);border-radius:14px;cursor:pointer;transition:all .2s;user-select:none}
+    .focus-area-card:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.18);transform:translateY(-2px)}
+    .focus-area-card.selected{border-color:var(--primary);background:rgba(102,126,234,.18);box-shadow:0 0 0 1px var(--primary)}
+    .focus-area-card-icon{font-size:1.9em}
+    .focus-area-card-name{font-size:.78em;font-weight:700;color:rgba(255,255,255,.75)}
+    .focus-duration{justify-content:center;margin-bottom:16px}
+    .focus-start-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--primary),var(--secondary));border:none;border-radius:14px;color:#fff;font-family:inherit;font-size:1.05em;font-weight:800;cursor:pointer;transition:all .2s;letter-spacing:.2px;margin-top:4px}
+    .focus-start-btn:hover{opacity:.9;transform:translateY(-1px)}
+    body.light-mode .focus-greeting{color:#18181b}
+    body.light-mode .focus-nudge{color:rgba(0,0,0,.45)}
+    body.light-mode .focus-area-label{color:rgba(0,0,0,.35)}
+    body.light-mode .focus-area-card{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.08)}
+    body.light-mode .focus-area-card:hover{background:rgba(0,0,0,.07);border-color:rgba(0,0,0,.15)}
+    body.light-mode .focus-area-card-name{color:rgba(0,0,0,.7)}
+
+    /* ── RIPPLES TAB ── */
+    .ripples-stats-row{display:flex;gap:10px;margin-bottom:26px}
+    .ripple-stat{flex:1;background:rgba(255,255,255,.05);border-radius:12px;padding:14px 10px;text-align:center}
+    .ripple-stat-val{font-size:1.35em;font-weight:800;color:#fff}
+    .ripple-stat-lbl{font-size:.68em;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.4);margin-top:2px}
+    .ripples-section{margin-bottom:28px}
+    .ripples-section-title{font-size:.75em;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,.4);margin-bottom:14px}
+    body.light-mode .ripple-stat{background:rgba(0,0,0,.04)}
+    body.light-mode .ripple-stat-val{color:#18181b}
+    body.light-mode .ripple-stat-lbl{color:rgba(0,0,0,.4)}
+    body.light-mode .ripples-section-title{color:rgba(0,0,0,.35)}
+
     .area-edit-icon-preview{font-size:1.6em;text-align:center;margin-bottom:10px}
     input[type="color"]{width:44px;height:32px;padding:2px;border-radius:6px;cursor:pointer;border:2px solid rgba(255,255,255,.2);background:none}
     .btn-danger{
@@ -883,7 +916,7 @@
     <span class="session-bar-area" id="sessionBarArea"></span>
     <span class="session-bar-time" id="sessionBarTime"></span>
   </div>
-  <button class="session-bar-btn" onclick="switchTab('timer',document.querySelector('[data-tab=timer]'))">⏱ Back to Timer →</button>
+  <button class="session-bar-btn" onclick="switchTab('focus',document.querySelector('[data-tab=focus]'))">⏱ Back to Focus →</button>
 </div>
 
 <!-- ══ SETTINGS TOAST ══ -->
@@ -981,41 +1014,33 @@
   </div>
 
   <div class="tabs" id="tabBar">
-    <div class="tab active" data-tab="home" data-tip="Your focus overview &amp; quick-start" onclick="switchTab('home',this)">Home</div>
-    <div class="tab" data-tab="timer" data-tip="Pomodoro timer for your active session" onclick="switchTab('timer',this)">Timer</div>
-    <div class="tab" data-tab="progress" data-tip="Track your weekly &amp; monthly goals" onclick="switchTab('progress',this)">Progress</div>
-    <div class="tab" data-tab="history" data-tip="Browse all your past sessions" onclick="switchTab('history',this)">History</div>
-    <div class="tab" data-tab="settings" data-tip="Customise areas, goals &amp; appearance" onclick="switchTab('settings',this)">Settings</div>
+    <div class="tab active" data-tab="focus" data-tip="Start your focus session" onclick="switchTab('focus',this)">Focus</div>
+    <div class="tab" data-tab="ripples" data-tip="Your sessions and progress" onclick="switchTab('ripples',this)">Ripples</div>
+    <div class="tab" data-tab="you" data-tip="Customise your Pebbl" onclick="switchTab('you',this)">You</div>
   </div>
 
-  <!-- ══ HOME ══ -->
-  <div id="home" class="tab-content active">
-    <div class="home-card" id="homeCard"></div>
-    <div class="stat-date" id="todayDate" style="margin-bottom:10px;text-align:right;font-size:.85em;font-weight:600"></div>
-    <div class="daily-stats" id="dailyStats">
-      <div class="stat-pill"><div class="stat-pill-val" id="statFocus">—</div><div class="stat-pill-lbl">This Week</div></div>
-      <div class="stat-pill"><div class="stat-pill-val" id="statSessions">—</div><div class="stat-pill-lbl">Sessions</div></div>
-      <div class="stat-pill"><div class="stat-pill-val" id="statStreak">—</div><div class="stat-pill-lbl">Streak</div></div>
-    </div>
-    <div class="area-carousel" id="areaCards">
-      <div id="areaHeroCard"></div>
-      <div class="area-carousel-nav">
-        <button class="carousel-btn" onclick="carouselPrev()">‹</button>
-        <div class="carousel-dots" id="carouselDots"></div>
-        <button class="carousel-btn" onclick="carouselNext()">›</button>
+  <!-- ══ FOCUS ══ -->
+  <div id="focus" class="tab-content active">
+
+    <!-- Pre-session: nudge + area selection -->
+    <div id="focusPreSession">
+      <div class="focus-greeting" id="focusGreeting"></div>
+      <div class="focus-nudge" id="focusNudge"></div>
+      <div class="focus-area-label">Where are you focusing?</div>
+      <div class="focus-area-grid" id="focusAreaGrid"></div>
+      <div id="focusStartSection" style="display:none">
+        <div class="timer-options focus-duration">
+          <div class="timer-option" onclick="setTimerDuration(15,this)">15</div>
+          <div class="timer-option active" onclick="setTimerDuration(35,this)">35</div>
+          <div class="timer-option" onclick="setTimerDuration(60,this)">60</div>
+          <input type="number" id="timerCustom" class="custom-dur" placeholder="min" min="1" max="240" oninput="setCustomTimerDuration(this)">
+        </div>
+        <button class="focus-start-btn" onclick="startFocusSession()">Start Focus →</button>
       </div>
     </div>
-  </div>
 
-  <!-- ══ TIMER ══ -->
-  <div id="timer" class="tab-content">
-    <div id="noSessionMsg" class="no-session-msg">
-      <div style="font-size:2.5em;margin-bottom:10px">⏱</div>
-      <div>No session running.</div>
-      <div style="margin-top:4px;font-size:.9em">Start a session from the Home screen.</div>
-      <button class="go-home" onclick="switchTab('home',document.querySelector('[data-tab=home]'))">Go to Home</button>
-    </div>
-    <div id="timerMain" style="display:none">
+    <!-- Active timer (shown when session is running) -->
+    <div id="focusTimerSection" style="display:none">
       <div class="timer-container">
         <div id="timerSessionLabel" class="timer-session-label">💼 Work</div>
         <div id="timerTaskLabel" class="timer-task-label"></div>
@@ -1025,15 +1050,9 @@
             <circle class="ring-progress" id="timerRing" cx="150" cy="150" r="120"/>
           </svg>
           <div class="timer-inner">
-            <div class="timer-display" id="timerDisplay">40:00</div>
+            <div class="timer-display" id="timerDisplay">35:00</div>
             <div class="timer-phase" id="timerPhase">💼 Work Time</div>
           </div>
-        </div>
-        <div class="timer-options">
-          <div class="timer-option" onclick="setTimerDuration(15,this)">15</div>
-          <div class="timer-option active" onclick="setTimerDuration(35,this)">35</div>
-          <div class="timer-option" onclick="setTimerDuration(60,this)">60</div>
-          <input type="number" id="timerCustom" class="custom-dur" placeholder="min" min="1" max="240" title="Custom minutes" oninput="setCustomTimerDuration(this)">
         </div>
         <div class="timer-buttons">
           <button class="btn-white" onclick="toggleTimer()" id="startBtn">Start</button>
@@ -1049,34 +1068,31 @@
         </label>
       </div>
     </div>
-  </div>
 
-  <!-- ══ PROGRESS ══ -->
-  <div id="progress" class="tab-content">
-    <h2>Progress</h2>
-    <div class="progress-layout">
-      <div class="progress-column">
-        <h3>📊 Weekly</h3>
-        <div class="progress-bars" id="weeklyProgressBars"></div>
+  </div><!-- end #focus -->
+
+  <!-- ══ RIPPLES ══ -->
+  <div id="ripples" class="tab-content">
+    <div class="ripples-stats-row" id="ripplesStatsRow"></div>
+    <div class="ripples-section">
+      <div class="ripples-section-title">📊 Weekly Progress</div>
+      <div class="progress-bars" id="weeklyProgressBars"></div>
+    </div>
+    <div class="ripples-section">
+      <div class="ripples-section-title">📅 Monthly</div>
+      <div class="chart-container" id="monthlyChart"></div>
+    </div>
+    <div class="ripples-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div class="ripples-section-title" style="margin-bottom:0">Sessions</div>
+        <button class="btn-export" onclick="downloadHistory()">⬇ Export CSV</button>
       </div>
-      <div class="progress-column">
-        <h3>📅 Monthly</h3>
-        <div class="chart-container" id="monthlyChart"></div>
-      </div>
+      <div class="session-log" id="sessionLog"></div>
     </div>
   </div>
 
-  <!-- ══ HISTORY ══ -->
-  <div id="history" class="tab-content">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px">
-      <h2 style="margin-bottom:0">Session History</h2>
-      <button class="btn-export" onclick="downloadHistory()">⬇ Export CSV</button>
-    </div>
-    <div class="session-log" id="sessionLog"></div>
-  </div>
-
-  <!-- ══ SETTINGS ══ -->
-  <div id="settings" class="tab-content">
+  <!-- ══ YOU ══ -->
+  <div id="you" class="tab-content">
     <h2>Settings</h2>
 
     <div class="settings-section">
@@ -1345,7 +1361,7 @@ function showApp() {
   store.set('pebbl_visited', true);
   const btn = document.getElementById('signOutBtn');
   if (btn) btn.style.display = 'block';
-  renderHome();
+  renderFocus();
   updateTimerDisplay();
   updateTimerRing();
 }
@@ -1389,16 +1405,14 @@ function migrateSession(s) {
 // ══ SESSION ACTIVE UI ══
 function updateSessionActiveUI() {
   const sessionRunning = isRunning && isWorkPhase && !!activeArea;
-  const onTimerTab = document.getElementById('timer').classList.contains('active');
+  const onFocusTab = document.getElementById('focus').classList.contains('active');
 
-  // Pulse the timer tab when session is running
-  const timerTab = document.querySelector('[data-tab="timer"]');
-  if (timerTab) timerTab.classList.toggle('session-active', sessionRunning && !onTimerTab);
+  const focusTab = document.querySelector('[data-tab="focus"]');
+  if (focusTab) focusTab.classList.toggle('session-active', sessionRunning && !onFocusTab);
 
-  // Show floating bar only when running AND not on the timer tab
   const bar = document.getElementById('sessionBar');
   if (bar) {
-    if (sessionRunning && !onTimerTab) {
+    if (sessionRunning && !onFocusTab) {
       bar.classList.add('visible');
       const m = Math.floor(timeRemaining / 60);
       const s = timeRemaining % 60;
@@ -1408,7 +1422,7 @@ function updateSessionActiveUI() {
       if (timeEl) timeEl.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')} left`;
     } else {
       bar.classList.remove('visible');
-      if (timerTab) timerTab.classList.remove('session-active');
+      if (focusTab) focusTab.classList.remove('session-active');
     }
   }
 }
@@ -1419,21 +1433,154 @@ function switchTab(name, el) {
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
   (el || document.querySelector(`[data-tab="${name}"]`)).classList.add('active');
   document.getElementById(name).classList.add('active');
-  if (name === 'home')     renderHome();
-  if (name === 'progress') renderProgress();
-  if (name === 'history')  renderHistory();
-  if (name === 'settings') renderSettings();
+  if (name === 'focus')   renderFocus();
+  if (name === 'ripples') { renderRipples(); }
+  if (name === 'you')     renderSettings();
   updateSessionActiveUI();
 }
 
-// ══ HOME ══
-function renderHome() {
-  renderDailyStats();
-  renderAreaCards();
-  renderHomeCard();
-  const d = new Date();
-  document.getElementById('todayDate').textContent =
-    d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+// ══ FOCUS ══
+const FOCUS_NUDGES = [
+  "Just the first pebble. That's all.",
+  "You don't have to feel ready to start.",
+  "Pick one thing. Just one.",
+  "The dread of starting is always worse than starting.",
+  "You've done it before. You can do it now.",
+  "Small start. Real progress.",
+  "One focused moment changes the whole day.",
+  "Momentum starts with a single move.",
+  "The hardest step is showing up. You're already here.",
+  "Just begin. The rest follows.",
+];
+let nudgeIndex = Math.floor(Math.random() * FOCUS_NUDGES.length);
+let nudgeTimer = null;
+let selectedFocusArea = null;
+
+function startNudgeRotation() {
+  const el = document.getElementById('focusNudge');
+  if (!el) return;
+  if (nudgeTimer) clearInterval(nudgeTimer);
+  function showNext() {
+    el.style.opacity = '0';
+    setTimeout(() => {
+      el.textContent = FOCUS_NUDGES[nudgeIndex % FOCUS_NUDGES.length];
+      nudgeIndex++;
+      el.style.opacity = '1';
+    }, 500);
+  }
+  showNext();
+  nudgeTimer = setInterval(showNext, 6000);
+}
+
+function renderFocusGreeting() {
+  const el = document.getElementById('focusGreeting');
+  if (!el) return;
+  const profile = store.get('profile') || {};
+  const name = profile.name || '';
+  const h = new Date().getHours();
+  const part = h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening';
+  el.textContent = name ? `Good ${part}, ${name}.` : `Good ${part}.`;
+}
+
+function renderFocusAreaGrid() {
+  const grid = document.getElementById('focusAreaGrid');
+  if (!grid) return;
+  grid.innerHTML = AREAS.map(area => `
+    <div class="focus-area-card${selectedFocusArea === area.name ? ' selected' : ''}"
+         data-area="${area.name}"
+         onclick="selectFocusArea('${area.name}')">
+      <span class="focus-area-card-icon">${area.icon}</span>
+      <span class="focus-area-card-name">${area.name}</span>
+    </div>
+  `).join('');
+}
+
+function selectFocusArea(areaName) {
+  selectedFocusArea = areaName;
+  document.querySelectorAll('.focus-area-card').forEach(c =>
+    c.classList.toggle('selected', c.dataset.area === areaName)
+  );
+  const ss = document.getElementById('focusStartSection');
+  if (ss) ss.style.display = '';
+}
+
+function startFocusSession() {
+  if (!selectedFocusArea) return;
+  const area = AREAS.find(a => a.name === selectedFocusArea);
+  if (!area) return;
+
+  activeArea = area.name;
+  activeTask = '';
+  sessionElapsed = 0;
+  sessionStartedAt = null;
+  pomodorosCompleted = 0;
+  document.getElementById('celebNotes').value = '';
+
+  clearInterval(timerInterval);
+  isRunning = false; isWorkPhase = true;
+  timeRemaining = selectedDuration * 60;
+  updateTimerDisplay();
+  updateTimerRing();
+
+  document.getElementById('timerSessionLabel').textContent = `${area.icon} ${area.name}`;
+  document.getElementById('timerTaskLabel').textContent = '';
+  document.getElementById('startBtn').textContent = 'Start';
+  const endBtn = document.getElementById('endSessionBtn');
+  if (endBtn) endBtn.style.display = 'block';
+
+  // Switch to timer view within focus tab
+  document.getElementById('focusPreSession').style.display = 'none';
+  document.getElementById('focusTimerSection').style.display = '';
+}
+
+function resetFocusToPreSession() {
+  selectedFocusArea = null;
+  const pre = document.getElementById('focusPreSession');
+  const timer = document.getElementById('focusTimerSection');
+  const ss = document.getElementById('focusStartSection');
+  if (pre) pre.style.display = '';
+  if (timer) timer.style.display = 'none';
+  if (ss) ss.style.display = 'none';
+  renderFocusAreaGrid();
+}
+
+function renderFocus() {
+  renderFocusGreeting();
+  renderFocusAreaGrid();
+  startNudgeRotation();
+  // If a session is active, stay on timer view
+  if (activeArea) {
+    document.getElementById('focusPreSession').style.display = 'none';
+    document.getElementById('focusTimerSection').style.display = '';
+  } else {
+    document.getElementById('focusPreSession').style.display = '';
+    document.getElementById('focusTimerSection').style.display = 'none';
+    const ss = document.getElementById('focusStartSection');
+    if (ss) ss.style.display = selectedFocusArea ? '' : 'none';
+  }
+}
+
+// ══ RIPPLES ══
+function renderRipples() {
+  renderRipplesStats();
+  renderProgress();
+  renderHistory();
+}
+
+function renderRipplesStats() {
+  const el = document.getElementById('ripplesStatsRow');
+  if (!el) return;
+  const week = getWeekSessions();
+  const totalHours = week.reduce((s,x) => s + x.hours, 0);
+  const h = Math.floor(totalHours);
+  const m = Math.round((totalHours - h) * 60);
+  const streak = calculateStreak();
+  const focusStr = totalHours > 0 ? (h > 0 ? `${h}h${m > 0 ? ` ${m}m` : ''}` : `${m}m`) : '—';
+  el.innerHTML = `
+    <div class="ripple-stat"><div class="ripple-stat-val">${focusStr}</div><div class="ripple-stat-lbl">This Week</div></div>
+    <div class="ripple-stat"><div class="ripple-stat-val">${week.length || '—'}</div><div class="ripple-stat-lbl">Sessions</div></div>
+    <div class="ripple-stat"><div class="ripple-stat-val">${streak > 0 ? streak + ' 🔥' : '—'}</div><div class="ripple-stat-lbl">Streak</div></div>
+  `;
 }
 
 function getTodaySessions() {
@@ -1912,22 +2059,19 @@ function beginSession() {
   updateTimerDisplay();
   updateTimerRing();
 
-  // Update timer tab UI
+  // Update timer labels
   document.getElementById('timerSessionLabel').textContent = `${areaIcon} ${areaName}`;
   document.getElementById('timerTaskLabel').textContent = task;
-  document.getElementById('noSessionMsg').style.display = 'none';
-  document.getElementById('timerMain').style.display = 'block';
-
-  // Sync duration options
-  document.querySelectorAll('.timer-option').forEach(o => {
-    o.classList.toggle('active', parseInt(o.textContent) === selectedDuration);
-  });
   document.getElementById('startBtn').textContent = 'Start';
   const endBtn = document.getElementById('endSessionBtn');
   if (endBtn) endBtn.style.display = 'block';
 
   closeSessionModal();
-  switchTab('timer', document.querySelector('[data-tab="timer"]'));
+  // Show timer view in focus tab
+  selectedFocusArea = areaName;
+  document.getElementById('focusPreSession').style.display = 'none';
+  document.getElementById('focusTimerSection').style.display = '';
+  switchTab('focus', document.querySelector('[data-tab="focus"]'));
 }
 
 // ══ TIMER ══
@@ -2126,8 +2270,7 @@ async function saveAndClose() {
   activeArea = ''; activeTask = '';
   const endBtn = document.getElementById('endSessionBtn');
   if (endBtn) endBtn.style.display = 'none';
-  document.getElementById('noSessionMsg').style.display = '';
-  document.getElementById('timerMain').style.display = 'none';
+  resetFocusToPreSession();
 }
 
 function cacheSessionsLocally() {
@@ -2421,7 +2564,7 @@ function dismissToast() {
 }
 function toastGoHome() {
   dismissToast();
-  switchTab('home', document.querySelector('[data-tab="home"]'));
+  switchTab('focus', document.querySelector('[data-tab="focus"]'));
 }
 
 function applyTheme(t) {
