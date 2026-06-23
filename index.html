@@ -400,22 +400,31 @@
     /* ── FOCUS TAB ── */
     .focus-greeting{font-size:1.4em;font-weight:800;color:#fff;margin-bottom:6px}
     .focus-nudge{font-size:.98em;font-weight:500;color:rgba(255,255,255,.55);margin-bottom:30px;min-height:1.4em;transition:opacity .5s ease;line-height:1.5}
+    .focus-last-session{display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;font-size:.82em;color:rgba(255,255,255,.5);margin-bottom:20px}
+    .focus-last-session strong{color:rgba(255,255,255,.8);font-weight:600}
     .focus-area-label{font-size:.72em;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.35);margin-bottom:12px}
-    .focus-area-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;margin-bottom:20px}
-    .focus-area-card{display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 10px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.07);border-radius:14px;cursor:pointer;transition:all .2s;user-select:none}
+    .focus-area-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:20px}
+    .focus-area-card{display:flex;flex-direction:column;align-items:center;gap:10px;padding:22px 14px 16px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.07);border-radius:16px;cursor:pointer;transition:all .2s;user-select:none}
     .focus-area-card:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.18);transform:translateY(-2px)}
     .focus-area-card.selected{border-color:var(--primary);background:rgba(102,126,234,.18);box-shadow:0 0 0 1px var(--primary)}
-    .focus-area-card-icon{font-size:1.9em}
-    .focus-area-card-name{font-size:.78em;font-weight:700;color:rgba(255,255,255,.75)}
+    .focus-area-card-icon{font-size:2.4em}
+    .focus-area-card-name{font-size:.85em;font-weight:700;color:rgba(255,255,255,.8)}
+    .focus-area-progress-wrap{width:100%;height:4px;background:rgba(255,255,255,.1);border-radius:2px}
+    .focus-area-progress-fill{height:100%;border-radius:2px;transition:width .4s ease}
+    .focus-area-progress-text{font-size:.68em;color:rgba(255,255,255,.35);font-weight:600}
     .focus-duration{justify-content:center;margin-bottom:16px}
     .focus-start-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--primary),var(--secondary));border:none;border-radius:14px;color:#fff;font-family:inherit;font-size:1.05em;font-weight:800;cursor:pointer;transition:all .2s;letter-spacing:.2px;margin-top:4px}
     .focus-start-btn:hover{opacity:.9;transform:translateY(-1px)}
     body.light-mode .focus-greeting{color:#18181b}
     body.light-mode .focus-nudge{color:rgba(0,0,0,.45)}
+    body.light-mode .focus-last-session{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.08);color:rgba(0,0,0,.45)}
+    body.light-mode .focus-last-session strong{color:rgba(0,0,0,.75)}
     body.light-mode .focus-area-label{color:rgba(0,0,0,.35)}
     body.light-mode .focus-area-card{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.08)}
     body.light-mode .focus-area-card:hover{background:rgba(0,0,0,.07);border-color:rgba(0,0,0,.15)}
-    body.light-mode .focus-area-card-name{color:rgba(0,0,0,.7)}
+    body.light-mode .focus-area-card-name{color:rgba(0,0,0,.75)}
+    body.light-mode .focus-area-progress-wrap{background:rgba(0,0,0,.08)}
+    body.light-mode .focus-area-progress-text{color:rgba(0,0,0,.35)}
 
     /* ── RIPPLES TAB ── */
     .ripples-stats-row{display:flex;gap:10px;margin-bottom:26px}
@@ -1026,6 +1035,7 @@
     <div id="focusPreSession">
       <div class="focus-greeting" id="focusGreeting"></div>
       <div class="focus-nudge" id="focusNudge"></div>
+      <div class="focus-last-session" id="focusLastSession" style="display:none"></div>
       <div class="focus-area-label">Where are you focusing?</div>
       <div class="focus-area-grid" id="focusAreaGrid"></div>
       <div id="focusStartSection" style="display:none">
@@ -1485,14 +1495,35 @@ function renderFocusGreeting() {
 function renderFocusAreaGrid() {
   const grid = document.getElementById('focusAreaGrid');
   if (!grid) return;
-  grid.innerHTML = AREAS.map(area => `
-    <div class="focus-area-card${selectedFocusArea === area.name ? ' selected' : ''}"
-         data-area="${area.name}"
-         onclick="selectFocusArea('${area.name}')">
-      <span class="focus-area-card-icon">${area.icon}</span>
-      <span class="focus-area-card-name">${area.name}</span>
-    </div>
-  `).join('');
+  const weekSessions = getWeekSessions();
+  grid.innerHTML = AREAS.map(area => {
+    const done = weekSessions.filter(s => s.area === area.name).reduce((s,x) => s+x.hours, 0);
+    const goal = (areaGoals[area.name] || DEFAULT_GOALS[area.name] || {weekly:10}).weekly;
+    const pct  = Math.min((done / goal) * 100, 100);
+    return `
+      <div class="focus-area-card${selectedFocusArea === area.name ? ' selected' : ''}"
+           data-area="${area.name}"
+           onclick="selectFocusArea('${area.name}')">
+        <span class="focus-area-card-icon">${area.icon}</span>
+        <span class="focus-area-card-name">${area.name}</span>
+        <div class="focus-area-progress-wrap">
+          <div class="focus-area-progress-fill" style="width:${pct}%;background:${area.color}"></div>
+        </div>
+        <span class="focus-area-progress-text">${done > 0 ? done.toFixed(1)+'h' : '—'} / ${goal}h</span>
+      </div>`;
+  }).join('');
+}
+
+function renderLastSessionNudge() {
+  const el = document.getElementById('focusLastSession');
+  if (!el) return;
+  if (!sessions.length) { el.style.display = 'none'; return; }
+  const last = sessions[0];
+  const area = AREAS.find(a => a.name === last.area) || {icon:'', name: last.area};
+  const daysSince = Math.floor((Date.now() - new Date(last.date)) / 86400000);
+  const whenStr = daysSince === 0 ? 'today' : daysSince === 1 ? 'yesterday' : `${daysSince} days ago`;
+  el.style.display = 'flex';
+  el.innerHTML = `<span>Last session:</span> <strong>${area.icon} ${last.area}</strong> <span>· ${whenStr} · ${last.hours.toFixed(1)}h</span>`;
 }
 
 function selectFocusArea(areaName) {
@@ -1546,6 +1577,7 @@ function resetFocusToPreSession() {
 
 function renderFocus() {
   renderFocusGreeting();
+  renderLastSessionNudge();
   renderFocusAreaGrid();
   startNudgeRotation();
   // If a session is active, stay on timer view
