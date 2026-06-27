@@ -1444,9 +1444,11 @@ async function loadUserData() {
   if (settings) {
     if (settings.areas && Array.isArray(settings.areas) && settings.areas.length > 0) {
       AREAS = settings.areas;
-      store.set('areas_cache', AREAS); // keep localStorage in sync with Supabase
+      // Sync localStorage so the cache always reflects what Supabase has
+      // Only do this when Supabase actually has data — prevents overwriting with stale defaults
+      store.set('areas_cache', AREAS);
     } else {
-      // Supabase has no areas yet — fall back to localStorage cache before using defaults
+      // Supabase has no areas row yet — use localStorage cache rather than defaults
       const cachedAreas = store.get('areas_cache');
       if (cachedAreas && Array.isArray(cachedAreas) && cachedAreas.length > 0) AREAS = cachedAreas;
     }
@@ -2677,10 +2679,12 @@ async function saveSettings() {
     areas:      AREAS,
     goals:      areaGoals,
     appearance: store.get('appearance') || 'dark',
-    theme:      store.get('theme') || null,
-    updated_at: new Date().toISOString()
+    theme:      store.get('theme') || null
   });
-  if (error) console.error('saveSettings error:', error);
+  if (error) {
+    console.error('saveSettings error:', error);
+    // Areas are already in localStorage — user won't lose data, but flag it
+  }
 }
 
 // ══ SETTINGS ══
