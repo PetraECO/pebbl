@@ -451,7 +451,7 @@
     .focus-area-card{display:flex;flex-direction:column;align-items:center;gap:10px;padding:22px 14px 16px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.07);border-radius:16px;cursor:pointer;transition:all .2s;user-select:none}
     .focus-area-card:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.18);transform:translateY(-2px)}
     .focus-area-card.selected{border-color:var(--primary);background:rgba(102,126,234,.18);box-shadow:0 0 0 1px var(--primary)}
-    .focus-area-card-icon{font-size:2.4em}
+    .focus-area-card-icon{display:flex;align-items:center;justify-content:center;width:48px;height:48px}
     .focus-area-card-name{font-size:.85em;font-weight:700;color:rgba(255,255,255,.8)}
     .focus-area-progress-wrap{width:100%;height:4px;background:rgba(255,255,255,.1);border-radius:2px}
     .focus-area-progress-fill{height:100%;border-radius:2px;transition:width .4s ease}
@@ -485,34 +485,7 @@
     body.light-mode .ripple-stat-lbl{color:rgba(0,0,0,.4)}
     body.light-mode .ripples-section-title{color:rgba(0,0,0,.35)}
 
-    .area-edit-icon-preview{font-size:1.6em;text-align:center;margin-bottom:10px}
-    /* ── EMOJI PICKER ── */
-    .emoji-picker-overlay{position:fixed;inset:0;z-index:9000;display:flex;align-items:flex-end;background:rgba(0,0,0,.55);animation:fadeInBg .18s ease}
-    @keyframes fadeInBg{from{opacity:0}to{opacity:1}}
-    .emoji-picker-sheet{
-      background:#1a1a2e;border-radius:22px 22px 0 0;padding:20px 16px 32px;
-      width:100%;max-height:62vh;overflow-y:auto;
-      animation:slideUpSheet .22s cubic-bezier(.34,1.2,.64,1)
-    }
-    @keyframes slideUpSheet{from{transform:translateY(100%)}to{transform:translateY(0)}}
-    .emoji-picker-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:0 4px}
-    .emoji-picker-title{font-weight:800;font-size:.95em;color:#fff}
-    .emoji-picker-close{background:rgba(255,255,255,.1);border:none;border-radius:50%;width:28px;height:28px;color:rgba(255,255,255,.6);font-size:1em;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
-    .emoji-picker-close:hover{background:rgba(255,255,255,.2)}
-    .emoji-picker-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
-    @media(max-width:380px){.emoji-picker-grid{grid-template-columns:repeat(6,1fr)}}
-    .emoji-picker-cell{font-size:1.45em;text-align:center;padding:7px 4px;border-radius:10px;cursor:pointer;transition:background .12s;border:none;background:none;line-height:1}
-    .emoji-picker-cell:hover{background:rgba(255,255,255,.12)}
-    .emoji-picker-cell.ep-selected{background:rgba(102,126,234,.4);outline:2px solid var(--primary)}
-    .emoji-cat-label{grid-column:1/-1;font-size:.6em;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:rgba(255,255,255,.28);padding:10px 2px 4px}
-    .emoji-picker-btn{
-      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
-      border-radius:10px;font-size:1.45em;padding:5px 12px;cursor:pointer;
-      transition:background .15s,transform .1s;line-height:1;display:inline-flex;
-      align-items:center;gap:6px
-    }
-    .emoji-picker-btn:hover{background:rgba(255,255,255,.16);transform:scale(1.06)}
-    .emoji-picker-btn .ep-edit{font-size:.45em;opacity:.5;font-style:normal}
+    .area-edit-icon-preview{display:flex;align-items:center;justify-content:center;margin-bottom:10px}
     input[type="color"]{width:44px;height:32px;padding:2px;border-radius:6px;cursor:pointer;border:2px solid rgba(255,255,255,.2);background:none}
     .btn-danger{
       padding:10px 18px;background:#f56565;color:#fff;border:none;border-radius:8px;
@@ -1079,7 +1052,7 @@
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-area-header">
-      <span class="modal-area-icon" id="modalIcon">💼</span>
+      <span class="modal-area-icon" id="modalIcon"></span>
       <span class="modal-area-name" id="modalAreaName">Work</span>
     </div>
     <div class="form-group">
@@ -1296,23 +1269,27 @@ function getAreaIconPath(name) {
 }
 
 const DEFAULT_AREAS = [
-  {name:'Work',     icon:'💼', color:'#6b9cc4'},
-  {name:'Study',    icon:'📚', color:'#9b84c8'},
-  {name:'Creative', icon:'✍️',  color:'#c8788a'}
+  {name:'Work',     color:'#6b9cc4'},
+  {name:'Study',    color:'#9b84c8'},
+  {name:'Creative', color:'#c8788a'}
 ];
 let AREAS = [...DEFAULT_AREAS];
 
 const DEFAULT_GOALS = {Work:{weekly:10,monthly:40},Study:{weekly:16,monthly:64},Creative:{weekly:5,monthly:20}};
 
-const EMOJI_SETS = [
-  {cat:'Work & Study', emojis:['💼','📚','💻','✍️','🎯','📊','📝','🔬','⚙️','🧠','💡','📐','🖥️','📱','🎓','🗂️','📌','🧮','🔭','📡']},
-  {cat:'Health & Body', emojis:['🏃','🧘','💪','🚴','🏊','🥗','😴','❤️','🌿','🏋️','🤸','🧬','🫀','🧪','🥤','🍎','🛌','🧖']},
-  {cat:'Creative', emojis:['🎨','🎸','🎹','📷','✏️','🖌️','🎭','🎬','🎼','📖','🪡','🧶','🎙️','🖊️','🎺','🥁','🎻','🪗','🖼️']},
-  {cat:'Life & Home',  emojis:['🏠','🌱','🍳','🧹','💰','🐾','🌸','☀️','🌙','⭐','🎁','🪴','🧺','🔑','🕯️','🪑','🛁','🪟']},
-  {cat:'People',       emojis:['❤️','👥','📞','🤝','💬','🫂','🧑‍🤝‍🧑','👨‍👩‍👧','👶','🐶','🐱','🦜','🌻','💌','🎉']},
-  {cat:'Play & Rest',  emojis:['🎮','🎲','🎬','📺','🎵','⚽','🏖️','🌴','✈️','🎪','🎡','🃏','🎳','🎯','🏄','🎿','🧩']},
-  {cat:'Energy',       emojis:['🔥','⚡','💫','🌊','🪨','🌈','💎','🗝️','🔮','🌀','⚜️','🕊️','🦋','🌟','☄️','🏔️','🌋','🦅']}
-];
+// Returns a clean SVG circle outline for an area — no emojis, just shape + initial
+function areaOrb(area, size=44) {
+  const c  = area.color || '#667eea';
+  const ltr = (area.name || '?').charAt(0).toUpperCase();
+  const r  = size / 2;
+  const cr = r - 3;
+  const fs = Math.round(size * 0.34);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="${r}" cy="${r}" r="${cr}" stroke="${c}" stroke-width="1.5" opacity="0.6"/>
+    <text x="${r}" y="${r + fs * 0.38}" text-anchor="middle" font-size="${fs}" font-weight="700"
+      fill="${c}" font-family="system-ui,-apple-system,sans-serif">${ltr}</text>
+  </svg>`;
+}
 
 const KUDOS = [
   'Another one in the books.','Consistency compounds.','Progress logged.',
@@ -1663,7 +1640,7 @@ function renderFocusAreaGrid() {
       <div class="focus-area-card${selectedFocusArea === area.name ? ' selected' : ''}"
            data-area="${area.name}"
            onclick="selectFocusArea('${area.name}')">
-        <span class="focus-area-card-icon">${area.icon}</span>
+        <span class="focus-area-card-icon">${areaOrb(area, 44)}</span>
         <span class="focus-area-card-name">${area.name}</span>
         <div class="focus-area-progress-wrap">
           <div class="focus-area-progress-fill" style="width:${pct}%;background:${area.color}"></div>
@@ -1678,11 +1655,10 @@ function renderLastSessionNudge() {
   if (!el) return;
   if (!sessions.length) { el.style.display = 'none'; return; }
   const last = sessions[0];
-  const area = AREAS.find(a => a.name === last.area) || {icon:'', name: last.area};
   const daysSince = Math.floor((Date.now() - new Date(last.date)) / 86400000);
   const whenStr = daysSince === 0 ? 'today' : daysSince === 1 ? 'yesterday' : `${daysSince} days ago`;
   el.style.display = 'flex';
-  el.innerHTML = `<span>Last session:</span> <strong>${area.icon} ${last.area}</strong> <span>· ${whenStr} · ${last.hours.toFixed(1)}h</span>`;
+  el.innerHTML = `<span>Last session:</span> <strong>${last.area}</strong> <span>· ${whenStr} · ${last.hours.toFixed(1)}h</span>`;
 }
 
 function selectFocusArea(areaName) {
@@ -1712,7 +1688,7 @@ function startFocusSession() {
   updateTimerDisplay();
   updateTimerRing();
 
-  document.getElementById('timerSessionLabel').textContent = `${area.icon} ${area.name}`;
+  document.getElementById('timerSessionLabel').textContent = area.name;
   document.getElementById('timerTaskLabel').textContent = '';
   document.getElementById('startBtn').textContent = 'Start';
   const endBtn = document.getElementById('endSessionBtn');
@@ -2112,18 +2088,18 @@ function renderHomeCard() {
   const behind = areaProgress.filter(x => x.pct < 1).sort((a,b) => a.pct - b.pct)[0];
   if (behind && week.length > 0) {
     const left = Math.max(0, behind.goal - behind.done).toFixed(1);
-    nudge = `${behind.area.icon} ${behind.area.name} is ${behind.done === 0 ? 'untouched this week' : `${left}h short of your weekly goal`}.`;
+    nudge = `${behind.area.name} is ${behind.done === 0 ? 'untouched this week' : `${left}h short of your weekly goal`}.`;
   }
 
   // ── Recent sessions ──
   const recentHTML = sessions.length
     ? '<div class="recent-header">Recent Sessions</div>' +
       sessions.slice(0, 3).map(s => {
-        const area = AREAS.find(a => a.name === s.area) || {icon:'', color:'#667eea', name: s.area};
+        const area = AREAS.find(a => a.name === s.area) || {color:'#667eea', name: s.area};
         const d = new Date(s.date);
         const dateStr = d.toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'});
         return `<div class="recent-entry" style="border-left-color:${area.color}">
-          <span class="recent-area">${area.icon} ${s.area}</span>
+          <span class="recent-area">${s.area}</span>
           <span class="recent-task">${s.task || '—'}</span>
           <span class="recent-meta">${s.hours.toFixed(1)}h &nbsp;·&nbsp; ${dateStr}</span>
         </div>`;
@@ -2205,7 +2181,7 @@ function quickStart() {
 // ══ SESSION MODAL ══
 function openSessionModal(area) {
   const modal = document.getElementById('sessionModal');
-  document.getElementById('modalIcon').textContent = area.icon;
+  document.getElementById('modalIcon').innerHTML = areaOrb(area, 36);
   document.getElementById('modalAreaName').textContent = area.name;
   document.getElementById('sessionTask').value = '';
   document.getElementById('sessionNotes').value = '';
@@ -2219,7 +2195,7 @@ function openSessionModal(area) {
 
   // Store area for beginSession
   modal.dataset.area = area.name;
-  modal.dataset.icon = area.icon;
+  // icon no longer needed on dataset
 
   // Reset duration to current selectedDuration
   modalDuration = selectedDuration;
@@ -2269,7 +2245,6 @@ function beginSession() {
   const task    = document.getElementById('sessionTask').value.trim();
   const notes   = document.getElementById('sessionNotes').value.trim();
   const areaName = modal.dataset.area;
-  const areaIcon = modal.dataset.icon;
 
   if (!task) { document.getElementById('sessionTask').focus(); return; }
 
@@ -2291,7 +2266,7 @@ function beginSession() {
   updateTimerRing();
 
   // Update timer labels
-  document.getElementById('timerSessionLabel').textContent = `${areaIcon} ${areaName}`;
+  document.getElementById('timerSessionLabel').textContent = areaName;
   document.getElementById('timerTaskLabel').textContent = task;
   document.getElementById('startBtn').textContent = 'Start';
   const endBtn = document.getElementById('endSessionBtn');
@@ -2576,7 +2551,7 @@ function renderWeeklyProgress() {
     el.className = 'progress-item';
     el.style.borderLeftColor = area.color;
     el.innerHTML = `
-      <div class="progress-header"><strong>${area.icon} ${area.name}</strong><span>${done.toFixed(1)}h / ${goal}h</span></div>
+      <div class="progress-header"><strong>${area.name}</strong><span>${done.toFixed(1)}h / ${goal}h</span></div>
       <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${area.color}">${pct>=18?pct.toFixed(0)+'%':''}</div></div>`;
     bars.appendChild(el);
   });
@@ -2598,7 +2573,7 @@ function renderMonthlyProgress() {
     bar.style.height = `${Math.max(pct,4)}%`;
     bar.style.background = area.color;
     bar.title = `${area.name}: ${done.toFixed(1)}h`;
-    bar.innerHTML = `<div class="chart-bar-value">${done.toFixed(1)}h</div><div class="chart-bar-label">${area.icon} ${area.name}</div>`;
+    bar.innerHTML = `<div class="chart-bar-value">${done.toFixed(1)}h</div><div class="chart-bar-label">${area.name}</div>`;
     chart.appendChild(bar);
   });
 }
@@ -2655,7 +2630,7 @@ function renderHistory() {
       el.style.borderLeftColor = color;
       el.innerHTML = `
         <div class="log-header">
-          <span>${a ? a.icon : '🪨'} ${s.area}</span>
+          <span>${s.area}</span>
           <span>${s.hours.toFixed(1)}h &nbsp;·&nbsp; ${d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
         </div>
         ${s.task ? `<div class="log-task">${s.task}</div>` : ''}
@@ -2717,7 +2692,7 @@ function renderGoalGrid() {
     card.style.setProperty('--accent', area.color);
     card.style.borderTopColor = area.color;
     card.innerHTML = `
-      <div class="goal-card-name" style="color:${area.color}">${area.icon} ${area.name}</div>
+      <div class="goal-card-name" style="color:${area.color}">${area.name}</div>
       <div class="goal-row"><label>Weekly hours</label><input type="number" id="goal-w-${area.name}" value="${g.weekly}" min="1" step=".5"></div>
       <div class="goal-row"><label>Monthly hours</label><input type="number" id="goal-m-${area.name}" value="${g.monthly}" min="1" step="1"></div>`;
     grid.appendChild(card);
@@ -2746,11 +2721,7 @@ function renderAreaEditGrid() {
     card.dataset.idx = i;
     card.innerHTML = `
       <div class="drag-handle">⠿ ⠿ ⠿</div>
-      <div class="area-edit-icon-preview">
-        <button class="emoji-picker-btn" onclick="openEmojiPicker(${i})" title="Change emoji" aria-label="Change emoji for ${area.name}">
-          ${area.icon}<em class="ep-edit">✏️</em>
-        </button>
-      </div>
+      <div class="area-edit-icon-preview">${areaOrb(area, 40)}</div>
       <div class="goal-row"><label>Name</label>
         <input type="text" id="aed-name-${i}" value="${area.name}" maxlength="20" style="flex:1;text-align:left">
       </div>
@@ -2778,7 +2749,6 @@ function renderAreaEditGrid() {
       // Capture current edited values before reordering
       const edited = AREAS.map((a, j) => ({
         name:  document.getElementById(`aed-name-${j}`)?.value.trim()  || a.name,
-        icon:  a.icon,  // icon is managed directly on AREAS[j] via emoji picker
         color: document.getElementById(`aed-color-${j}`)?.value        || a.color
       }));
       const [moved] = edited.splice(dragAreaSrc, 1);
@@ -2795,7 +2765,6 @@ async function saveAreas() {
   const oldNames = AREAS.map(a => a.name);
   const newAreas = AREAS.map((area, i) => ({
     name:  (document.getElementById(`aed-name-${i}`)?.value.trim()  || area.name),
-    icon:  area.icon,  // icon is set directly via emoji picker and already on AREAS[i]
     color: document.getElementById(`aed-color-${i}`)?.value || area.color
   }));
   const newGoals = {};
@@ -2875,7 +2844,7 @@ function renderAreaResetGrid() {
     btn.className = 'btn-area-reset';
     btn.style.borderColor = area.color;
     btn.style.color = area.color;
-    btn.textContent = `${area.icon} ${area.name} (${count})`;
+    btn.textContent = `${area.name} (${count})`;
     btn.onclick = () => resetAreaData(area.name);
     grid.appendChild(btn);
   });
@@ -2969,52 +2938,6 @@ function toggleSound() {
   if (soundEnabled) { initAudio(); playTick(); }
 }
 
-// ── EMOJI PICKER ──
-let _epTargetIdx = null;
-
-function openEmojiPicker(idx) {
-  _epTargetIdx = idx;
-  const currentEmoji = AREAS[idx]?.icon || '';
-  const grid = document.getElementById('emojiPickerGrid');
-  grid.innerHTML = '';
-  EMOJI_SETS.forEach(({cat, emojis}) => {
-    const lbl = document.createElement('div');
-    lbl.className = 'emoji-cat-label';
-    lbl.textContent = cat;
-    grid.appendChild(lbl);
-    emojis.forEach(em => {
-      const btn = document.createElement('button');
-      btn.className = 'emoji-picker-cell' + (em === currentEmoji ? ' ep-selected' : '');
-      btn.textContent = em;
-      btn.setAttribute('aria-label', em);
-      btn.onclick = () => selectEmoji(em);
-      grid.appendChild(btn);
-    });
-  });
-  const overlay = document.getElementById('emojiPickerOverlay');
-  overlay.style.display = 'flex';
-}
-
-function closeEmojiPicker() {
-  document.getElementById('emojiPickerOverlay').style.display = 'none';
-  _epTargetIdx = null;
-}
-
-async function selectEmoji(emoji) {
-  if (_epTargetIdx === null) return;
-  const i = _epTargetIdx;
-  // Capture any unsaved name/color changes on the card too
-  const name  = document.getElementById(`aed-name-${i}`)?.value.trim()  || AREAS[i].name;
-  const color = document.getElementById(`aed-color-${i}`)?.value        || AREAS[i].color;
-  AREAS[i] = { name, icon: emoji, color };
-  // Write to localStorage first — instant, device-level persistence
-  store.set('areas_cache', AREAS);
-  closeEmojiPicker();
-  // Then persist to Supabase for cross-device sync
-  await saveSettings();
-  renderAreaEditGrid();
-  showSettingsToast();
-}
 
 // ── START ──
 init();
@@ -3028,15 +2951,5 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
-<!-- Emoji Picker -->
-<div id="emojiPickerOverlay" style="display:none;position:fixed;inset:0;z-index:9000;align-items:flex-end;background:rgba(0,0,0,.55)" onclick="if(event.target===this)closeEmojiPicker()">
-  <div class="emoji-picker-sheet">
-    <div class="emoji-picker-header">
-      <span class="emoji-picker-title">Pick an emoji</span>
-      <button class="emoji-picker-close" onclick="closeEmojiPicker()" aria-label="Close">✕</button>
-    </div>
-    <div class="emoji-picker-grid" id="emojiPickerGrid"></div>
-  </div>
-</div>
 </body>
 </html>
