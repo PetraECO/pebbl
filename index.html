@@ -409,6 +409,9 @@
     }
     .focus-letrip-btn:hover{filter:brightness(1.08);transform:translateY(-2px)}
     .focus-letrip-btn:active{transform:scale(.98)}
+    .focus-letrip-btn.inactive{background:rgba(255,255,255,.08);color:rgba(255,255,255,.35);box-shadow:none}
+    .focus-letrip-btn.inactive:hover{filter:none;transform:none}
+    body.light-mode .focus-letrip-btn.inactive{background:rgba(0,0,0,.05);color:rgba(0,0,0,.3)}
     .focus-letrip-hint{margin-top:10px;font-size:.78em;color:rgba(255,255,255,.3);font-weight:500;min-height:1.1em}
     .focus-area-divider{
       display:flex;align-items:center;gap:12px;margin-bottom:16px;
@@ -1542,6 +1545,11 @@ function selectFocusArea(areaName) {
   );
   const ss = document.getElementById('focusStartSection');
   if (ss) ss.style.display = '';
+  updatePebblBtnState();
+}
+function updatePebblBtnState() {
+  const btn = document.getElementById('focusLetRipBtn');
+  if (btn) btn.classList.toggle('inactive', !!selectedFocusArea);
 }
 function startFocusSession() {
   if (!selectedFocusArea) return;
@@ -1576,6 +1584,7 @@ function resetFocusToPreSession() {
   if (timer) timer.style.display = 'none';
   if (ss) ss.style.display = 'none';
   renderFocusAreaGrid();
+  updatePebblBtnState();
 }
 function cancelSession() {
   clearInterval(timerInterval);
@@ -1613,6 +1622,7 @@ function renderFocus() {
   renderFocusGreeting();
   renderLastSessionNudge();
   renderFocusAreaGrid();
+  updatePebblBtnState();
   startNudgeRotation();
   // Hint below quick-start button
   const hint = document.getElementById('focusLetRipHint');
@@ -2713,6 +2723,14 @@ function toggleSound() {
   soundEnabled = document.getElementById('soundToggle').checked;
   if (soundEnabled) { initAudio(); playTick(); }
 }
+// ── PEBBL BUTTON HOVER LABEL ──
+(function setupPebblHover() {
+  const btn = document.getElementById('focusLetRipBtn');
+  if (!btn) return;
+  const defaultLabel = btn.textContent;
+  btn.addEventListener('mouseenter', () => { btn.textContent = 'Start 5min sprint →'; });
+  btn.addEventListener('mouseleave', () => { btn.textContent = defaultLabel; });
+})();
 // ── START ──
 init();
 // ── SERVICE WORKER ──
