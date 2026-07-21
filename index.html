@@ -4,34 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Pebbl</title>
-
   <!-- PWA -->
   <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#12121e">
+  <meta name="theme-color" content="#1c1c1a">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Pebbl">
   <link rel="apple-touch-icon" href="./icon-192.png">
-
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     :root{
-      --primary:#667eea;--primary-dark:#5a67d8;--secondary:#764ba2;
-      --bg-light:#1a1a2e;--bg-dark:#0d0d1f;
-      --work:#6b9cc4;--study:#9b84c8;--creative:#c8788a;
+      --primary:#8a9a86;--primary-dark:#6f7f6b;--secondary:#8a9a86;
+      --bg-light:#1a1a2e;--bg-dark:#1c1c1a;
+      --work:#7d8a99;--study:#8a9a86;--creative:#b08968;
     }
     body{
       font-family:'Plus Jakarta Sans',system-ui,sans-serif;
-      background:#0d0d1f;
+      background:#1c1c1a;
       min-height:100vh;padding:16px 20px 24px;color:#e2e8f0;transition:background .3s,color .3s
     }
     .container{max-width:960px;margin:0 auto}
     .brand{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:32px;margin-bottom:22px}
     h1{color:#fff;margin:0;font-size:2em;font-weight:800;letter-spacing:-.5px}
-
     /* ── TABS ── */
     .tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;transition:opacity .4s ease}
     .tabs.focus-mode{opacity:.08;pointer-events:none}
@@ -42,8 +39,7 @@
       position:relative
     }
     .tab:hover{background:rgba(255,255,255,.14);color:#fff}
-    .tab.active{background:var(--primary);color:#fff;box-shadow:0 4px 14px rgba(102,126,234,.38)}
-
+    .tab.active{background:var(--primary);color:#fff;box-shadow:0 4px 12px rgba(138,154,134,.3)}
     /* ── TAB TOOLTIPS ── */
     .tab[data-tip]::after{
       content:attr(data-tip);
@@ -61,7 +57,6 @@
     body.light-mode .tab[data-tip]::after{
       background:rgba(30,30,50,.95);border-color:rgba(0,0,0,.15)
     }
-
     /* ── TAB CONTENT ── */
     .tab-content{display:none;padding:0}
     .tab-content.active{display:block}
@@ -71,14 +66,12 @@
       background:rgba(255,255,255,.05);padding:28px;border-radius:16px;
       border:1px solid rgba(255,255,255,.1)
     }
-
     /* ══ HOME SCREEN ══ */
-
     /* Daily stats bar */
     .daily-stats{
       display:flex;gap:0;margin-bottom:28px;
-      background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-      border-radius:14px;overflow:hidden;box-shadow:0 4px 20px rgba(102,126,234,.35)
+      background:var(--primary);
+      border-radius:14px;overflow:hidden;box-shadow:0 4px 20px rgba(138,154,134,.28)
     }
     .stat-pill{
       flex:1;padding:18px 12px;text-align:center;
@@ -91,7 +84,6 @@
       text-align:right;padding:10px 18px 0;
       font-size:.8em;color:rgba(255,255,255,.7);font-weight:600;letter-spacing:.3px
     }
-
     /* Area cards */
     /* ══ HERO AREA CAROUSEL ══ */
     .area-carousel{position:relative;margin-bottom:24px}
@@ -105,13 +97,13 @@
     /* coloured gradient bg from area colour */
     .area-hero::before{
       content:'';position:absolute;inset:0;
-      background:linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%);
+      background:var(--accent-color);
       opacity:1;z-index:0
     }
-    /* glass sheen */
+    /* subtle highlight */
     .area-hero::after{
       content:'';position:absolute;inset:0;
-      background:linear-gradient(135deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,0) 55%);
+      background:rgba(255,255,255,.06);
       pointer-events:none;z-index:1
     }
     .area-hero-inner{position:relative;z-index:2}
@@ -150,7 +142,6 @@
       background:rgba(255,255,255,.25);transition:all .25s
     }
     .carousel-dot.active{background:#fff;width:20px;border-radius:3px}
-
     /* ══ SESSION START MODAL ══ */
     .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;justify-content:center;align-items:flex-end}
     .modal.active{display:flex}
@@ -192,7 +183,6 @@
       font-weight:600;cursor:pointer;margin-top:8px;transition:color .2s
     }
     .btn-cancel:hover{color:#718096}
-
     /* ══ TIMER ══ */
     .timer-container{
       text-align:center;padding:48px 30px 36px;
@@ -203,7 +193,7 @@
     }
     .timer-container::before{
       content:'';position:absolute;inset:0;
-      background:radial-gradient(ellipse 60% 50% at 50% 40%, var(--ring-glow-bg,rgba(102,126,234,.14)) 0%, transparent 70%);
+      background:radial-gradient(ellipse 60% 50% at 50% 40%, var(--ring-glow-bg,rgba(138,154,134,.14)) 0%, transparent 70%);
       pointer-events:none;transition:background .8s
     }
     .timer-session-label{
@@ -254,7 +244,6 @@
       transition:all .2s;display:none
     }
     .btn-end-session:hover{background:rgba(248,113,113,.25);border-color:rgba(248,113,113,.7);color:#fff}
-
     /* ── PULSING TIMER TAB ── */
     .tab.session-active{
       background:#16a34a !important;color:#fff !important;
@@ -264,11 +253,10 @@
       0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.7)}
       50%{box-shadow:0 0 0 10px rgba(34,197,94,0)}
     }
-
     /* ── SESSION ACTIVE FLOATING BAR ── */
     .session-bar{
       position:fixed;top:0;left:0;right:0;z-index:900;
-      background:linear-gradient(90deg,#15803d,#16a34a);
+      background:#16a34a;
       display:none;align-items:center;justify-content:space-between;gap:12px;
       padding:10px 20px;
       box-shadow:0 2px 16px rgba(0,0,0,.3)
@@ -306,14 +294,13 @@
       background:var(--primary);color:#fff;border:none;border-radius:8px;
       cursor:pointer;font-family:inherit;font-weight:700;font-size:.9em
     }
-
     /* ══ PROGRESS ══ */
     .progress-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px}
     @media(max-width:700px){.progress-layout{grid-template-columns:1fr}}
     .progress-column{background:rgba(255,255,255,.05);padding:22px;border-radius:14px;border:1px solid rgba(255,255,255,.1)}
     .progress-column h3{margin-bottom:18px;color:#fff;font-weight:700}
     .progress-bars{display:grid;gap:14px}
-    .progress-item{background:rgba(255,255,255,.06);padding:14px 16px;border-radius:10px;border-left:4px solid #667eea}
+    .progress-item{background:rgba(255,255,255,.06);padding:14px 16px;border-radius:10px;border-left:4px solid var(--primary)}
     .progress-header{display:flex;justify-content:space-between;margin-bottom:8px;font-weight:700;color:#e2e8f0;font-size:.9em}
     .progress-bar{height:18px;background:rgba(255,255,255,.1);border-radius:9px;overflow:hidden}
     .progress-fill{
@@ -333,7 +320,6 @@
     }
     .chart-bar-label{position:absolute;bottom:-26px;left:50%;transform:translateX(-50%);font-size:.8em;color:rgba(255,255,255,.5);white-space:nowrap;font-weight:700}
     .chart-bar-value{position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-size:.78em;color:#e2e8f0;font-weight:700;white-space:nowrap}
-
     /* ══ HISTORY ══ */
     .session-log{margin-top:4px}
     .log-accordion{margin-bottom:8px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.07)}
@@ -355,7 +341,6 @@
     .log-task{color:rgba(255,255,255,.65);font-size:.9em;margin-bottom:4px;font-weight:500}
     .log-notes{color:rgba(255,255,255,.45);font-size:.88em}
     .log-empty{text-align:center;padding:40px 0;color:rgba(255,255,255,.35);font-weight:500}
-
     /* ══ SETTINGS ══ */
     .settings-section{background:rgba(255,255,255,.05);padding:24px;border-radius:14px;border:1px solid rgba(255,255,255,.1);margin-bottom:20px}
     .settings-section h3{margin-bottom:14px;font-weight:700;color:#fff}
@@ -385,12 +370,12 @@
     @media(max-width:600px){.area-edit-grid{grid-template-columns:1fr}}
     .area-edit-card{
       background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
-      border-radius:12px;padding:16px;border-top:4px solid #667eea;
+      border-radius:12px;padding:16px;border-top:4px solid var(--primary);
       cursor:grab;transition:transform .15s,box-shadow .15s,background .15s
     }
     .area-edit-card:active{cursor:grabbing}
     .area-edit-card.drag-over{
-      background:rgba(102,126,234,.18);border-color:rgba(102,126,234,.5);
+      background:rgba(138,154,134,.18);border-color:rgba(138,154,134,.5);
       transform:scale(1.03);box-shadow:0 0 0 2px var(--primary)
     }
     .area-edit-card.dragging{opacity:.4}
@@ -398,7 +383,6 @@
       text-align:center;color:rgba(255,255,255,.2);font-size:.75em;
       margin-bottom:8px;user-select:none;letter-spacing:2px
     }
-
     /* ── EXPORT BUTTON ── */
     .btn-export{
       padding:9px 18px;background:rgba(255,255,255,.08);
@@ -411,7 +395,6 @@
       background:#f4f4f5;border-color:#d4d4d8;color:#52525b
     }
     body.light-mode .btn-export:hover{background:#e4e4e7;color:#18181b}
-
     /* ── FOCUS TAB ── */
     /* ── Focus hero ── */
     .focus-hero{text-align:center;padding:28px 4px 32px;margin-bottom:20px}
@@ -419,10 +402,10 @@
     .focus-nudge{font-size:.98em;font-weight:500;color:rgba(255,255,255,.55);margin-bottom:26px;min-height:1.4em;transition:opacity .5s ease;line-height:1.5}
     .focus-letrip-btn{
       width:100%;padding:20px;border:none;border-radius:16px;
-      background:linear-gradient(135deg,var(--primary),var(--secondary));
+      background:var(--primary);
       color:#fff;font-family:inherit;font-size:1.2em;font-weight:800;
       cursor:pointer;transition:all .22s;letter-spacing:-.2px;
-      box-shadow:0 8px 32px rgba(102,126,234,.45)
+      box-shadow:0 8px 24px rgba(138,154,134,.35)
     }
     .focus-letrip-btn:hover{filter:brightness(1.08);transform:translateY(-2px)}
     .focus-letrip-btn:active{transform:scale(.98)}
@@ -436,28 +419,22 @@
     .focus-last-session strong{color:rgba(255,255,255,.8);font-weight:600}
     .focus-first-use{
       display:flex;align-items:flex-start;gap:12px;padding:16px 18px;margin-bottom:20px;
-      background:linear-gradient(135deg,rgba(102,126,234,.1),rgba(118,75,162,.1));
-      border:1.5px solid rgba(102,126,234,.22);border-radius:14px;text-align:left
+      background:rgba(138,154,134,.08);
+      border:1.5px solid rgba(138,154,134,.22);border-radius:14px;text-align:left
     }
     .focus-first-use-icon{font-size:1.6em;flex-shrink:0;margin-top:1px}
     .focus-first-use-text{font-size:.88em;color:rgba(255,255,255,.65);line-height:1.55;font-weight:500}
     .focus-first-use-text strong{color:rgba(255,255,255,.9);font-weight:700}
-    body.light-mode .focus-first-use{background:rgba(102,126,234,.07);border-color:rgba(102,126,234,.2)}
+    body.light-mode .focus-first-use{background:rgba(138,154,134,.06);border-color:rgba(138,154,134,.2)}
     body.light-mode .focus-first-use-text{color:rgba(0,0,0,.55)}
     body.light-mode .focus-first-use-text strong{color:rgba(0,0,0,.8)}
     .focus-area-label{font-size:.72em;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.35);margin-bottom:12px}
-    .focus-area-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:20px}
-    .focus-area-card:last-child:nth-child(odd){grid-column:1/-1}
-    .focus-area-card{display:flex;flex-direction:column;align-items:center;gap:10px;padding:22px 14px 16px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.07);border-radius:16px;cursor:pointer;transition:all .2s;user-select:none}
-    .focus-area-card:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.18);transform:translateY(-2px)}
-    .focus-area-card.selected{border-color:var(--primary);background:rgba(102,126,234,.18);box-shadow:0 0 0 1px var(--primary)}
-    .focus-area-card-icon{display:flex;align-items:center;justify-content:center;width:48px;height:48px}
-    .focus-area-card-name{font-size:.85em;font-weight:700;color:rgba(255,255,255,.8)}
-    .focus-area-progress-wrap{width:100%;height:4px;background:rgba(255,255,255,.1);border-radius:2px}
-    .focus-area-progress-fill{height:100%;border-radius:2px;transition:width .4s ease}
-    .focus-area-progress-text{font-size:.68em;color:rgba(255,255,255,.35);font-weight:600}
+    .focus-area-picker{display:flex;flex-wrap:wrap;justify-content:center;gap:24px;margin-bottom:22px}
+    .focus-area-link{background:none;border:none;padding:2px 0;font-family:inherit;font-size:.88em;font-weight:600;color:rgba(255,255,255,.4);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;letter-spacing:.2px}
+    .focus-area-link:hover{color:rgba(255,255,255,.7)}
+    .focus-area-link.selected{color:#fff;border-bottom-color:var(--primary)}
     .focus-duration{justify-content:center;margin-bottom:16px}
-    .focus-start-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--primary),var(--secondary));border:none;border-radius:14px;color:#fff;font-family:inherit;font-size:1.05em;font-weight:800;cursor:pointer;transition:all .2s;letter-spacing:.2px;margin-top:4px}
+    .focus-start-btn{width:100%;padding:16px;background:var(--primary);border:none;border-radius:14px;color:#fff;font-family:inherit;font-size:1.05em;font-weight:800;cursor:pointer;transition:all .2s;letter-spacing:.2px;margin-top:4px}
     .focus-start-btn:hover{opacity:.9;transform:translateY(-1px)}
     body.light-mode .focus-greeting{color:#18181b}
     body.light-mode .focus-nudge{color:rgba(0,0,0,.45)}
@@ -467,12 +444,9 @@
     body.light-mode .focus-area-divider{color:rgba(0,0,0,.22)}
     body.light-mode .focus-area-divider::before,body.light-mode .focus-area-divider::after{background:rgba(0,0,0,.08)}
     body.light-mode .focus-area-label{color:rgba(0,0,0,.35)}
-    body.light-mode .focus-area-card{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.08)}
-    body.light-mode .focus-area-card:hover{background:rgba(0,0,0,.07);border-color:rgba(0,0,0,.15)}
-    body.light-mode .focus-area-card-name{color:rgba(0,0,0,.75)}
-    body.light-mode .focus-area-progress-wrap{background:rgba(0,0,0,.08)}
-    body.light-mode .focus-area-progress-text{color:rgba(0,0,0,.35)}
-
+    body.light-mode .focus-area-link{color:rgba(0,0,0,.4)}
+    body.light-mode .focus-area-link:hover{color:rgba(0,0,0,.7)}
+    body.light-mode .focus-area-link.selected{color:#18181b}
     /* ── RIPPLES TAB ── */
     .ripples-stats-row{display:flex;gap:10px;margin-bottom:26px}
     .ripple-stat{flex:1;background:rgba(255,255,255,.05);border-radius:12px;padding:14px 10px;text-align:center}
@@ -484,19 +458,17 @@
     body.light-mode .ripple-stat-val{color:#18181b}
     body.light-mode .ripple-stat-lbl{color:rgba(0,0,0,.4)}
     body.light-mode .ripples-section-title{color:rgba(0,0,0,.35)}
-
     .area-edit-icon-preview{display:flex;align-items:center;justify-content:center;margin-bottom:10px}
     input[type="color"]{width:44px;height:32px;padding:2px;border-radius:6px;cursor:pointer;border:2px solid rgba(255,255,255,.2);background:none}
     .btn-danger{
       padding:10px 18px;background:#f56565;color:#fff;border:none;border-radius:8px;
       cursor:pointer;font-family:inherit;font-weight:700;font-size:.9em
     }
-
     /* ══ HOME CARD (welcome + recent sessions) ══ */
     .home-card{
       background:rgba(255,255,255,.07);
       border:1px solid rgba(255,255,255,.14);
-      box-shadow:0 4px 32px rgba(102,126,234,.15), inset 0 1px 0 rgba(255,255,255,.08);
+      box-shadow:0 4px 24px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.06);
       backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
       border-radius:16px;padding:22px 24px 18px;margin-bottom:20px
     }
@@ -508,18 +480,13 @@
       font-size:.83em;color:rgba(255,255,255,.65);font-weight:500
     }
     .quick-start-banner{
-      background:linear-gradient(135deg,var(--primary) 0%,var(--secondary) 100%);
+      background:var(--primary);
       border-radius:16px;padding:22px 24px;margin-bottom:20px;
       display:flex;align-items:center;justify-content:space-between;gap:16px;
-      box-shadow:0 6px 28px rgba(102,126,234,.45);
+      box-shadow:0 6px 20px rgba(138,154,134,.3);
       cursor:pointer;transition:all .25s;position:relative;overflow:hidden
     }
-    .quick-start-banner::before{
-      content:'';position:absolute;inset:0;
-      background:linear-gradient(135deg,rgba(255,255,255,.12) 0%,transparent 60%);
-      pointer-events:none
-    }
-    .quick-start-banner:hover{transform:translateY(-2px);box-shadow:0 10px 36px rgba(102,126,234,.55)}
+    .quick-start-banner:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(138,154,134,.4)}
     .quick-start-banner:active{transform:translateY(0)}
     .quick-start-text{flex:1}
     .quick-start-label{font-size:.72em;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.7);margin-bottom:4px}
@@ -540,7 +507,6 @@
     .recent-area{font-size:.83em;font-weight:700;color:#fff;min-width:85px;white-space:nowrap}
     .recent-task{flex:1;font-size:.83em;color:rgba(255,255,255,.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .recent-meta{font-size:.78em;color:rgba(255,255,255,.38);font-weight:600;white-space:nowrap}
-
     /* ══ AREA RESET ══ */
     .area-reset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
     @media(max-width:600px){.area-reset-grid{grid-template-columns:1fr}}
@@ -550,7 +516,6 @@
       font-size:.82em;transition:opacity .2s
     }
     .btn-area-reset:hover{opacity:.65}
-
     /* ══ SETTINGS TOAST ══ */
     .settings-toast{
       position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(100px);
@@ -578,7 +543,6 @@
       transition:background .2s
     }
     .toast-btn-stay:hover{background:rgba(255,255,255,.14)}
-
     /* ══ CELEBRATION OVERLAY ══ */
     .celebration-overlay{
       position:fixed;inset:0;z-index:2000;
@@ -632,7 +596,7 @@
   /* ══ SPLASH SCREEN ══ */
   .splash-overlay{
     position:fixed;inset:0;z-index:5000;
-    background:#0d0d1f;
+    background:#1c1c1a;
     display:flex;align-items:center;justify-content:center;
     transition:opacity .5s ease;overflow:hidden
   }
@@ -640,7 +604,7 @@
   /* Ambient ripple rings in background */
   .splash-ring{
     position:absolute;left:50%;top:42%;border-radius:50%;
-    border:1px solid rgba(102,126,234,.12);pointer-events:none;
+    border:1px solid rgba(138,154,134,.15);pointer-events:none;
     animation:sRipple 5s ease-out infinite;
   }
   .splash-ring:nth-child(2){animation-delay:1.7s}
@@ -664,17 +628,16 @@
     font-size:.97em;color:rgba(255,255,255,.48);margin-bottom:52px;line-height:1.75
   }
   .splash-highlight{
-    background:linear-gradient(135deg,#667eea,#a78bfa);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    color:var(--primary);
     font-weight:800
   }
   .splash-actions{display:flex;flex-direction:column;gap:12px;max-width:320px;margin:0 auto}
   .splash-btn-primary{
     padding:16px;border:none;border-radius:14px;
-    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    background:var(--primary);
     color:#fff;font-family:inherit;font-size:1.05em;font-weight:800;
     cursor:pointer;transition:all .2s;
-    box-shadow:0 6px 24px rgba(102,126,234,.45)
+    box-shadow:0 6px 18px rgba(138,154,134,.32)
   }
   .splash-btn-primary:hover{transform:translateY(-2px);filter:brightness(1.1)}
   .splash-btn-ghost{
@@ -683,11 +646,10 @@
     font-size:1em;font-weight:700;cursor:pointer;transition:all .2s
   }
   .splash-btn-ghost:hover{border-color:rgba(255,255,255,.45);color:#fff}
-
   /* ══ ONBOARDING OVERLAY ══ */
   .onboarding-overlay{
     position:fixed;inset:0;z-index:4000;
-    background:#0d0d1f;
+    background:#1c1c1a;
     display:flex;align-items:center;justify-content:center;
     opacity:1;transition:opacity .4s
   }
@@ -715,7 +677,7 @@
     width:100%;padding:15px;margin-top:8px;border:none;border-radius:12px;
     background:var(--primary);color:#fff;font-family:inherit;
     font-size:1.05em;font-weight:800;cursor:pointer;transition:all .2s;
-    box-shadow:0 4px 20px rgba(102,126,234,.4)
+    box-shadow:0 4px 16px rgba(138,154,134,.3)
   }
   .btn-onboard:hover{filter:brightness(1.1);transform:translateY(-1px)}
   .onboard-skip{
@@ -745,7 +707,6 @@
   }
   .auth-loading{color:rgba(255,255,255,.5);font-size:.9em;text-align:center;padding:12px 0}
   .hidden{display:none!important}
-
   /* ══ DARK BASE: inputs / labels ══ */
   label{color:rgba(255,255,255,.55)}
   input,textarea,select{color:#fff}
@@ -762,7 +723,6 @@
   input.custom-dur::placeholder{color:rgba(255,255,255,.3)!important;font-weight:400}
   input.custom-dur:focus{outline:none;border-style:solid!important;border-color:var(--primary)!important;background:rgba(255,255,255,.1)!important}
   body.light-mode .custom-dur-lbl{color:rgba(0,0,0,.35)}
-
   /* ══ APPEARANCE TOGGLE ══ */
   .appearance-toggle{display:flex;gap:10px}
   .appearance-btn{
@@ -772,7 +732,6 @@
   }
   .appearance-btn:hover{background:rgba(255,255,255,.12);color:#fff}
   .appearance-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-
   /* ══ LIGHT MODE ══ */
   body.light-mode{background:#f4f4f5;color:#18181b}
   body.light-mode h1{color:#18181b}
@@ -845,7 +804,6 @@
   </style>
 </head>
 <body>
-
 <!-- ══ AUTH ══ -->
 <!-- ══ SPLASH SCREEN ══ -->
 <div class="splash-overlay hidden" id="splashOverlay">
@@ -856,14 +814,11 @@
   <div class="splash-inner">
     <div class="splash-logo">
       <svg width="64" height="64" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs><linearGradient id="sg" x1="4" y1="4" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#667eea"/><stop offset="100%" stop-color="#764ba2"/>
-        </linearGradient></defs>
-        <ellipse cx="20" cy="26" rx="12" ry="10" fill="url(#sg)" opacity=".95"/>
+        <ellipse cx="20" cy="26" rx="12" ry="10" fill="#8a9a86" opacity=".95"/>
         <ellipse cx="20" cy="26" rx="12" ry="10" fill="white" opacity=".08"/>
         <ellipse cx="16" cy="21" rx="4" ry="2.5" fill="white" opacity=".22" transform="rotate(-20 16 21)"/>
-        <path d="M34 30 Q38 22 34 14" stroke="#667eea" stroke-width="2" stroke-linecap="round" fill="none" opacity=".75"/>
-        <path d="M37 32 Q43 22 37 12" stroke="#667eea" stroke-width="1.5" stroke-linecap="round" fill="none" opacity=".45"/>
+        <path d="M34 30 Q38 22 34 14" stroke="#8a9a86" stroke-width="2" stroke-linecap="round" fill="none" opacity=".75"/>
+        <path d="M37 32 Q43 22 37 12" stroke="#8a9a86" stroke-width="1.5" stroke-linecap="round" fill="none" opacity=".45"/>
       </svg>
       <h1>Pebbl</h1>
     </div>
@@ -879,29 +834,23 @@
     </div>
   </div>
 </div>
-
 <div class="onboarding-overlay hidden" id="authOverlay">
   <div class="onboarding-box">
     <div class="onboarding-logo">
       <svg width="36" height="36" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs><linearGradient id="og" x1="4" y1="4" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#667eea"/><stop offset="100%" stop-color="#764ba2"/>
-        </linearGradient></defs>
-        <ellipse cx="20" cy="26" rx="12" ry="10" fill="url(#og)" opacity=".95"/>
+        <ellipse cx="20" cy="26" rx="12" ry="10" fill="#8a9a86" opacity=".95"/>
         <ellipse cx="20" cy="26" rx="12" ry="10" fill="white" opacity=".08"/>
         <ellipse cx="16" cy="21" rx="4" ry="2.5" fill="white" opacity=".22" transform="rotate(-20 16 21)"/>
-        <path d="M34 30 Q38 22 34 14" stroke="url(#og)" stroke-width="2" stroke-linecap="round" fill="none" opacity=".5"/>
-        <path d="M37 32 Q43 22 37 12" stroke="url(#og)" stroke-width="1.5" stroke-linecap="round" fill="none" opacity=".28"/>
+        <path d="M34 30 Q38 22 34 14" stroke="#8a9a86" stroke-width="2" stroke-linecap="round" fill="none" opacity=".5"/>
+        <path d="M37 32 Q43 22 37 12" stroke="#8a9a86" stroke-width="1.5" stroke-linecap="round" fill="none" opacity=".28"/>
       </svg>
       <h2>Pebbl</h2>
     </div>
-
     <!-- Auth tabs -->
     <div class="auth-tabs">
       <button class="auth-tab active" id="tabSignIn" onclick="showAuthTab('signin')">Sign in</button>
       <button class="auth-tab" id="tabSignUp" onclick="showAuthTab('signup')">Create account</button>
     </div>
-
     <!-- Sign in -->
     <div id="authSignIn">
       <div class="onboarding-field">
@@ -919,7 +868,6 @@
       <button class="btn-onboard" onclick="signIn()">Sign in →</button>
       <button class="onboard-skip" onclick="showForgotPassword()" style="margin-top:12px;width:100%">Forgot your password?</button>
     </div>
-
     <!-- Forgot password panel -->
     <div id="authForgotPw" style="display:none">
       <button class="onboard-skip" onclick="showAuthTab('signin')" style="margin-bottom:20px;padding:0;text-align:left">← Back to sign in</button>
@@ -932,18 +880,16 @@
       <div class="auth-error hidden" id="fpError"></div>
       <button class="btn-onboard" onclick="sendPasswordReset()">Send reset link →</button>
     </div>
-
     <!-- Reset link sent -->
     <div id="authResetSent" style="display:none;text-align:center">
       <div style="font-size:2.8em;margin-bottom:16px">🔑</div>
       <div class="onboarding-title" style="margin-bottom:8px">Check your email</div>
       <div class="onboarding-sub" id="resetSentAddr" style="margin-bottom:24px"></div>
-      <div style="background:rgba(102,126,234,.15);border:1px solid rgba(102,126,234,.3);border-radius:12px;padding:14px 16px;font-size:.85em;color:rgba(255,255,255,.7);text-align:left;line-height:1.6;margin-bottom:20px">
+      <div style="background:rgba(138,154,134,.12);border:1px solid rgba(138,154,134,.28);border-radius:12px;padding:14px 16px;font-size:.85em;color:rgba(255,255,255,.7);text-align:left;line-height:1.6;margin-bottom:20px">
         Click the link in the email to reset your password, then come back and sign in.
       </div>
       <button class="btn-onboard" onclick="showAuthTab('signin')">Back to sign in →</button>
     </div>
-
     <!-- Set new password (after clicking reset link) -->
     <div id="authSetNewPw" style="display:none">
       <div class="onboarding-title" style="margin-bottom:6px">Set a new password</div>
@@ -958,7 +904,6 @@
       <div class="auth-error hidden" id="newPwError"></div>
       <button class="btn-onboard" onclick="setNewPassword()">Update password →</button>
     </div>
-
     <!-- Sign up -->
     <div id="authSignUp" style="display:none">
       <div class="onboarding-field">
@@ -979,22 +924,19 @@
       <div class="auth-error hidden" id="suError"></div>
       <button class="btn-onboard" onclick="signUp()">Create account →</button>
     </div>
-
     <div class="auth-loading hidden" id="authLoading">Just a moment…</div>
-
     <!-- Check email state -->
     <div id="authCheckEmail" style="display:none;text-align:center">
       <div style="font-size:2.8em;margin-bottom:16px">📬</div>
       <div class="onboarding-title" style="margin-bottom:8px">Check your email</div>
       <div class="onboarding-sub" id="checkEmailAddr" style="margin-bottom:24px"></div>
-      <div style="background:rgba(102,126,234,.15);border:1px solid rgba(102,126,234,.3);border-radius:12px;padding:14px 16px;font-size:.85em;color:rgba(255,255,255,.7);text-align:left;line-height:1.6;margin-bottom:20px">
+      <div style="background:rgba(138,154,134,.12);border:1px solid rgba(138,154,134,.28);border-radius:12px;padding:14px 16px;font-size:.85em;color:rgba(255,255,255,.7);text-align:left;line-height:1.6;margin-bottom:20px">
         Click the link in the email to confirm your account, then come back here and sign in.
       </div>
       <button class="btn-onboard" onclick="showAuthTab('signin')">Go to sign in →</button>
     </div>
   </div>
 </div>
-
 <!-- ══ SESSION ACTIVE BAR ══ -->
 <div class="session-bar" id="sessionBar">
   <div class="session-bar-dot"></div>
@@ -1004,7 +946,6 @@
   </div>
   <button class="session-bar-btn" onclick="switchTab('focus',document.querySelector('[data-tab=focus]'))">⏱ Back to Focus →</button>
 </div>
-
 <!-- ══ SETTINGS TOAST ══ -->
 <div class="settings-toast" id="settingsToast">
   <span class="toast-msg">✓ Settings saved</span>
@@ -1013,7 +954,6 @@
     <button class="toast-btn-stay" onclick="dismissToast()">Stay in Settings</button>
   </div>
 </div>
-
 <!-- ══ CELEBRATION OVERLAY ══ -->
 <div id="celebrationOverlay" class="celebration-overlay hidden">
   <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
@@ -1046,7 +986,6 @@
     </div>
   </div>
 </div>
-
 <!-- ══ SESSION START MODAL ══ -->
 <div class="modal" id="sessionModal" onclick="handleModalBackdrop(event)">
   <div class="modal-sheet">
@@ -1077,40 +1016,30 @@
     <button class="btn-cancel" onclick="closeSessionModal()">Cancel</button>
   </div>
 </div>
-
 <div class="container">
   <div class="brand" style="position:relative">
     <button id="signOutBtn" onclick="signOut()" style="display:none;position:absolute;right:0;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.55);padding:6px 14px;border-radius:8px;font-family:inherit;font-size:.78em;font-weight:600;cursor:pointer;transition:all .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Sign out</button>
     <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="vg" x1="4" y1="4" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#667eea"/><stop offset="100%" stop-color="#764ba2"/>
-        </linearGradient>
-      </defs>
       <!-- pebble body -->
-      <ellipse cx="20" cy="26" rx="12" ry="10" fill="url(#vg)" opacity=".95"/>
+      <ellipse cx="20" cy="26" rx="12" ry="10" fill="#8a9a86" opacity=".95"/>
       <ellipse cx="20" cy="26" rx="12" ry="10" fill="white" opacity=".08"/>
       <!-- shine -->
       <ellipse cx="16" cy="21" rx="4" ry="2.5" fill="white" opacity=".22" transform="rotate(-20 16 21)"/>
       <!-- ripple arcs -->
-      <path d="M34 30 Q38 22 34 14" stroke="url(#vg)" stroke-width="2" stroke-linecap="round" fill="none" opacity=".5"/>
-      <path d="M37 32 Q43 22 37 12" stroke="url(#vg)" stroke-width="1.5" stroke-linecap="round" fill="none" opacity=".28"/>
+      <path d="M34 30 Q38 22 34 14" stroke="#8a9a86" stroke-width="2" stroke-linecap="round" fill="none" opacity=".5"/>
+      <path d="M37 32 Q43 22 37 12" stroke="#8a9a86" stroke-width="1.5" stroke-linecap="round" fill="none" opacity=".28"/>
     </svg>
     <h1>Pebbl</h1>
   </div>
-
   <div class="tabs" id="tabBar">
     <div class="tab active" data-tab="focus" data-tip="Start your focus session" onclick="switchTab('focus',this)">Focus</div>
     <div class="tab" data-tab="ripples" data-tip="Your sessions and progress" onclick="switchTab('ripples',this)">Ripples</div>
     <div class="tab" data-tab="you" data-tip="Customise your Pebbl" onclick="switchTab('you',this)">You</div>
   </div>
-
   <!-- ══ FOCUS ══ -->
   <div id="focus" class="tab-content active">
-
     <!-- Pre-session: hero CTA + optional area picker -->
     <div id="focusPreSession">
-
       <!-- Hero: shown every session -->
       <div class="focus-hero">
         <div class="focus-greeting" id="focusGreeting"></div>
@@ -1118,11 +1047,10 @@
         <button class="focus-letrip-btn" id="focusLetRipBtn" onclick="startQuickSession()">Drop a pebbl →</button>
         <div class="focus-letrip-hint" id="focusLetRipHint"></div>
       </div>
-
       <!-- Area picker: optional, for intentional tracking -->
       <div class="focus-area-divider">or pick where you're focusing</div>
       <div class="focus-last-session" id="focusLastSession" style="display:none"></div>
-      <div class="focus-area-grid" id="focusAreaGrid"></div>
+      <div class="focus-area-picker" id="focusAreaGrid"></div>
       <div id="focusStartSection" style="display:none">
         <div class="timer-options focus-duration">
           <div class="timer-option" onclick="setTimerDuration(15,this)">15</div>
@@ -1135,7 +1063,6 @@
         <button class="focus-start-btn" onclick="startFocusSession()">Start Focus →</button>
       </div>
     </div>
-
     <!-- Active timer (shown when session is running) -->
     <div id="focusTimerSection" style="display:none">
       <div style="display:flex;justify-content:flex-end;margin-bottom:4px">
@@ -1168,9 +1095,7 @@
         </label>
       </div>
     </div>
-
   </div><!-- end #focus -->
-
   <!-- ══ RIPPLES ══ -->
   <div id="ripples" class="tab-content">
     <div class="ripples-stats-row" id="ripplesStatsRow"></div>
@@ -1190,11 +1115,9 @@
       <div class="session-log" id="sessionLog"></div>
     </div>
   </div>
-
   <!-- ══ YOU ══ -->
   <div id="you" class="tab-content">
     <h2>Settings</h2>
-
     <div class="settings-section">
       <h3>👤 Profile</h3>
       <p>Your name and email are stored locally on this device only.</p>
@@ -1210,21 +1133,18 @@
       </div>
       <button class="btn-save-goals" onclick="saveProfileFromSettings()" style="margin-top:14px">Save Profile</button>
     </div>
-
     <div class="settings-section">
       <h3>✏️ Your Areas</h3>
       <p>Rename, recolour, or change the icon for each focus area. Note: renaming won't update past sessions.</p>
       <div class="area-edit-grid" id="areaEditGrid"></div>
       <button class="btn-save-goals" onclick="saveAreas()" style="margin-top:16px">Save Areas</button>
     </div>
-
     <div class="settings-section">
       <h3>🎯 Weekly Goals</h3>
       <p>Hours you aim to spend in each area per week</p>
       <div class="goal-grid" id="goalGrid"></div>
       <button class="btn-save-goals" onclick="saveGoals()" style="margin-top:16px">Save Goals</button>
     </div>
-
     <div class="settings-section">
       <h3>🌓 Appearance</h3>
       <p>Switch between dark and light mode</p>
@@ -1233,13 +1153,11 @@
         <button class="appearance-btn" id="btnLight" onclick="setAppearance('light')">☀️ Light</button>
       </div>
     </div>
-
     <div class="settings-section">
       <h3>🎨 Theme</h3>
       <p>Choose an accent colour</p>
       <div class="color-options" id="colorOptions"></div>
     </div>
-
     <div class="settings-section">
       <h3>⚠️ Data</h3>
       <p>Delete sessions by area, or wipe everything. This cannot be undone.</p>
@@ -1248,13 +1166,11 @@
     </div>
   </div>
 </div>
-
 <script>
 // ══ SUPABASE ══
 const SUPABASE_URL  = 'https://nqgawtyzynggdouanzrr.supabase.co';
 const SUPABASE_KEY  = 'sb_publishable_au3b9IbvnK7ECv2PJxGxMw_xGNJaTs8';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
 // ══ CONFIG ══
 function getAreaIconPath(name) {
   const n = (name || '').toLowerCase();
@@ -1267,19 +1183,16 @@ function getAreaIconPath(name) {
   // generic: target/circle icon for custom areas
   return '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/>';
 }
-
 const DEFAULT_AREAS = [
-  {name:'Work',     color:'#6b9cc4'},
-  {name:'Study',    color:'#9b84c8'},
-  {name:'Creative', color:'#c8788a'}
+  {name:'Work',     color:'#7d8a99'},
+  {name:'Study',    color:'#8a9a86'},
+  {name:'Creative', color:'#b08968'}
 ];
 let AREAS = [...DEFAULT_AREAS];
-
 const DEFAULT_GOALS = {Work:{weekly:10,monthly:40},Study:{weekly:16,monthly:64},Creative:{weekly:5,monthly:20}};
-
 // Returns a clean SVG circle outline for an area — no emojis, just shape + initial
 function areaOrb(area, size=44) {
-  const c  = area.color || '#667eea';
+  const c  = area.color || '#8a9a86';
   const ltr = (area.name || '?').charAt(0).toUpperCase();
   const r  = size / 2;
   const cr = r - 3;
@@ -1290,32 +1203,27 @@ function areaOrb(area, size=44) {
       fill="${c}" font-family="system-ui,-apple-system,sans-serif">${ltr}</text>
   </svg>`;
 }
-
 const KUDOS = [
   'Another one in the books.','Consistency compounds.','Progress logged.',
   'That\'s one more block done.','Momentum maintained.','Keep showing up.',
   'You did the work.','One session closer.','Future you is grateful.'
 ];
-
 const COLOR_THEMES = [
-  {name:'Indigo',     primary:'#667eea', secondary:'#764ba2'},
-  {name:'Violet',     primary:'#9b84c8', secondary:'#7c5cbf'},
-  {name:'Teal',       primary:'#4aadb5', secondary:'#2d8a92'},
-  {name:'Rose',       primary:'#e57a8a', secondary:'#c4546a'},
-  {name:'Amber',      primary:'#f59e4a', secondary:'#d97706'},
-  {name:'Sage',       primary:'#7a9e7e', secondary:'#5a7e5e'}
+  {name:'Sage',   primary:'#8a9a86', secondary:'#8a9a86'},
+  {name:'Slate',  primary:'#7d8a99', secondary:'#7d8a99'},
+  {name:'Stone',  primary:'#9c9284', secondary:'#9c9284'},
+  {name:'Clay',   primary:'#b08968', secondary:'#b08968'},
+  {name:'Moss',   primary:'#75886f', secondary:'#75886f'},
+  {name:'Mist',   primary:'#8fa3a8', secondary:'#8fa3a8'}
 ];
-
 const CIRCUMFERENCE = 753.98;
 const BREAK_TIME = 10 * 60;
-
 // ══ STORAGE (device prefs only — theme, appearance) ══
 const store = {
   get:(k)=>{ const v=localStorage.getItem(k); return v?JSON.parse(v):null },
   set:(k,v)=>localStorage.setItem(k,JSON.stringify(v)),
   del:(k)=>localStorage.removeItem(k)
 };
-
 // ══ STATE ══
 let sessions   = [];
 let areaGoals  = {...DEFAULT_GOALS};
@@ -1323,7 +1231,6 @@ let activeArea = '';
 let activeTask = '';
 let modalDuration = 35;
 let currentUser = null;
-
 let timerInterval     = null;
 let timeRemaining     = 35 * 60;
 let selectedDuration  = 35;
@@ -1341,7 +1248,6 @@ let dragAreaSrc        = null;
 let audioContext      = null;
 let confettiFrame     = null;
 let userDataLoaded     = false; // prevents double-load from onAuthStateChange immediate fire
-
 // ══ INIT ══
 async function init() {
   // Detect password recovery redirect BEFORE any auth events fire.
@@ -1351,13 +1257,11 @@ async function init() {
   if (hashParams.get('type') === 'recovery' || searchParams.get('type') === 'recovery') {
     isPasswordRecovery = true;
   }
-
   // Device prefs (always local)
   const savedAppearance = store.get('appearance') || 'dark';
   setAppearance(savedAppearance);
   const theme = store.get('theme') || COLOR_THEMES[0];
   applyTheme(theme);
-
   // Check Supabase session
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
@@ -1377,7 +1281,6 @@ async function init() {
   } else {
     showAuthOverlay();
   }
-
   // Listen for auth changes.
   // NOTE: Supabase v2 fires SIGNED_IN immediately on registration — userDataLoaded prevents
   // a redundant second load that can wipe sessions if the query races.
@@ -1408,7 +1311,6 @@ async function init() {
     }
   });
 }
-
 async function loadUserData() {
   // Load settings (areas, goals, profile name, appearance, theme)
   const { data: settings } = await sb
@@ -1416,7 +1318,6 @@ async function loadUserData() {
     .select('*')
     .eq('user_id', currentUser.id)
     .maybeSingle();
-
   const existingProfile = store.get('profile') || {};
   if (settings) {
     if (settings.areas && Array.isArray(settings.areas) && settings.areas.length > 0) {
@@ -1452,14 +1353,12 @@ async function loadUserData() {
     areaGoals = {...DEFAULT_GOALS};
     store.set('profile', {name: existingProfile.name || '', email: currentUser.email});
   }
-
   // Load sessions from Supabase, with localStorage cache as fallback
   const { data: rows, error: sessErr } = await sb
     .from('sessions')
     .select('*')
     .eq('user_id', currentUser.id)
     .order('date', {ascending: false});
-
   if (sessErr) {
     console.error('Sessions load error:', sessErr);
     // Fall back to localStorage cache so data isn't lost on a bad request
@@ -1482,7 +1381,6 @@ async function loadUserData() {
     cacheSessionsLocally();
   }
 }
-
 function showApp() {
   document.getElementById('authOverlay').classList.add('hidden');
   document.getElementById('splashOverlay').classList.add('hidden');
@@ -1495,7 +1393,6 @@ function showApp() {
   updateTimerDisplay();
   updateTimerRing();
 }
-
 function showAuthOverlay(tab) {
   const hasVisited = store.get('pebbl_visited');
   if (!hasVisited) {
@@ -1509,7 +1406,6 @@ function showAuthOverlay(tab) {
   const btn = document.getElementById('signOutBtn');
   if (btn) btn.style.display = 'none';
 }
-
 function dismissSplash(tab) {
   store.set('pebbl_visited', true);
   const splash = document.getElementById('splashOverlay');
@@ -1521,7 +1417,6 @@ function dismissSplash(tab) {
     showAuthTab(tab || 'signup');
   }, 450);
 }
-
 function migrateSession(s) {
   if (s.area) return s;
   const WORK_SUBJECTS = ['Client Work'];
@@ -1531,19 +1426,15 @@ function migrateSession(s) {
   else if (CREATIVE_SUBJECTS.includes(s.subject)) area = 'Creative';
   return { area, task: s.subject || '', hours: s.hours || 0, notes: s.notes || '', date: s.date, pomodoros: s.pomodoros || 0 };
 }
-
 // ══ SESSION ACTIVE UI ══
 function updateSessionActiveUI() {
   const sessionRunning = isRunning && isWorkPhase && !!activeArea;
   const onFocusTab = document.getElementById('focus').classList.contains('active');
-
   // Dim tabs whenever a session is active (regardless of tab)
   const tabBar = document.getElementById('tabBar');
   if (tabBar) tabBar.classList.toggle('focus-mode', !!activeArea);
-
   const focusTab = document.querySelector('[data-tab="focus"]');
   if (focusTab) focusTab.classList.toggle('session-active', sessionRunning && !onFocusTab);
-
   const bar = document.getElementById('sessionBar');
   if (bar) {
     if (sessionRunning && !onFocusTab) {
@@ -1560,14 +1451,12 @@ function updateSessionActiveUI() {
     }
   }
 }
-
 // ── NOTIFICATIONS ──
 function requestNotificationPermission() {
   if ('Notification' in window && Notification.permission === 'default') {
     Notification.requestPermission();
   }
 }
-
 function sendTimerNotification(label) {
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
   new Notification('🪨 Pebbl — Time\'s up!', {
@@ -1577,7 +1466,6 @@ function sendTimerNotification(label) {
     silent: false
   });
 }
-
 // ══ TABS ══
 function switchTab(name, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1589,7 +1477,6 @@ function switchTab(name, el) {
   if (name === 'you')     renderSettings();
   updateSessionActiveUI();
 }
-
 // ══ FOCUS ══
 const FOCUS_NUDGES = [
   "Just the first pebble. That's all.",
@@ -1606,7 +1493,6 @@ const FOCUS_NUDGES = [
 let nudgeIndex = Math.floor(Math.random() * FOCUS_NUDGES.length);
 let nudgeTimer = null;
 let selectedFocusArea = null;
-
 function startNudgeRotation() {
   const el = document.getElementById('focusNudge');
   if (!el) return;
@@ -1622,7 +1508,6 @@ function startNudgeRotation() {
   showNext();
   nudgeTimer = setInterval(showNext, 6000);
 }
-
 function renderFocusGreeting() {
   const el = document.getElementById('focusGreeting');
   if (!el) return;
@@ -1632,29 +1517,14 @@ function renderFocusGreeting() {
   const part = h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening';
   el.textContent = name ? `Good ${part}, ${name}.` : `Good ${part}.`;
 }
-
 function renderFocusAreaGrid() {
   const grid = document.getElementById('focusAreaGrid');
   if (!grid) return;
-  const weekSessions = getWeekSessions();
-  grid.innerHTML = AREAS.map(area => {
-    const done = weekSessions.filter(s => s.area === area.name).reduce((s,x) => s+x.hours, 0);
-    const goal = (areaGoals[area.name] || DEFAULT_GOALS[area.name] || {weekly:10}).weekly;
-    const pct  = Math.min((done / goal) * 100, 100);
-    return `
-      <div class="focus-area-card${selectedFocusArea === area.name ? ' selected' : ''}"
+  grid.innerHTML = AREAS.map(area => `
+      <button type="button" class="focus-area-link${selectedFocusArea === area.name ? ' selected' : ''}"
            data-area="${area.name}"
-           onclick="selectFocusArea('${area.name}')">
-        <span class="focus-area-card-icon">${areaOrb(area, 44)}</span>
-        <span class="focus-area-card-name">${area.name}</span>
-        <div class="focus-area-progress-wrap">
-          <div class="focus-area-progress-fill" style="width:${pct}%;background:${area.color}"></div>
-        </div>
-        <span class="focus-area-progress-text">${done > 0 ? done.toFixed(1)+'h' : '—'} / ${goal}h</span>
-      </div>`;
-  }).join('');
+           onclick="selectFocusArea('${area.name}')">${area.name}</button>`).join('');
 }
-
 function renderLastSessionNudge() {
   const el = document.getElementById('focusLastSession');
   if (!el) return;
@@ -1665,45 +1535,38 @@ function renderLastSessionNudge() {
   el.style.display = 'flex';
   el.innerHTML = `<span>Last session:</span> <strong>${last.area}</strong> <span>· ${whenStr} · ${last.hours.toFixed(1)}h</span>`;
 }
-
 function selectFocusArea(areaName) {
   selectedFocusArea = areaName;
-  document.querySelectorAll('.focus-area-card').forEach(c =>
+  document.querySelectorAll('.focus-area-link').forEach(c =>
     c.classList.toggle('selected', c.dataset.area === areaName)
   );
   const ss = document.getElementById('focusStartSection');
   if (ss) ss.style.display = '';
 }
-
 function startFocusSession() {
   if (!selectedFocusArea) return;
   const area = AREAS.find(a => a.name === selectedFocusArea);
   if (!area) return;
-
   activeArea = area.name;
   activeTask = '';
   sessionElapsed = 0;
   sessionStartedAt = null;
   pomodorosCompleted = 0;
   document.getElementById('celebNotes').value = '';
-
   clearInterval(timerInterval);
   isRunning = false; isWorkPhase = true;
   timeRemaining = selectedDuration * 60;
   updateTimerDisplay();
   updateTimerRing();
-
   document.getElementById('timerSessionLabel').textContent = area.name;
   document.getElementById('timerTaskLabel').textContent = '';
   document.getElementById('startBtn').textContent = 'Start';
   const endBtn = document.getElementById('endSessionBtn');
   if (endBtn) endBtn.style.display = 'block';
-
   // Switch to timer view within focus tab
   document.getElementById('focusPreSession').style.display = 'none';
   document.getElementById('focusTimerSection').style.display = '';
 }
-
 function resetFocusToPreSession() {
   selectedFocusArea = null;
   const pre = document.getElementById('focusPreSession');
@@ -1714,7 +1577,6 @@ function resetFocusToPreSession() {
   if (ss) ss.style.display = 'none';
   renderFocusAreaGrid();
 }
-
 function cancelSession() {
   clearInterval(timerInterval);
   isRunning = false;
@@ -1727,7 +1589,6 @@ function cancelSession() {
   resetFocusToPreSession();
   renderFocus();
 }
-
 function startQuickSession() {
   // Area-free quick start — 5 minutes, no tracking category
   activeArea = 'Freeform';
@@ -1739,27 +1600,23 @@ function startQuickSession() {
   selectedDuration = 5;
   timeRemaining = 5 * 60;
   updateTimerDisplay(); updateTimerRing();
-
   document.getElementById('timerSessionLabel').textContent = '🪨 Free focus';
   document.getElementById('timerTaskLabel').textContent = '';
-  document.getElementById('startBtn').textContent = 'Start';
   const endBtn = document.getElementById('endSessionBtn');
   if (endBtn) endBtn.style.display = 'block';
-
   document.getElementById('focusPreSession').style.display = 'none';
   document.getElementById('focusTimerSection').style.display = '';
+  // Start immediately — no extra tap needed
+  toggleTimer();
 }
-
 function renderFocus() {
   renderFocusGreeting();
   renderLastSessionNudge();
   renderFocusAreaGrid();
   startNudgeRotation();
-
   // Hint below quick-start button
   const hint = document.getElementById('focusLetRipHint');
   if (hint) hint.textContent = 'just 5 minutes · no area needed';
-
   // If a session is active, stay on timer view
   if (activeArea) {
     document.getElementById('focusPreSession').style.display = 'none';
@@ -1771,14 +1628,12 @@ function renderFocus() {
     if (ss) ss.style.display = selectedFocusArea ? '' : 'none';
   }
 }
-
 // ══ RIPPLES ══
 function renderRipples() {
   renderRipplesStats();
   renderProgress();
   renderHistory();
 }
-
 function renderRipplesStats() {
   const el = document.getElementById('ripplesStatsRow');
   if (!el) return;
@@ -1794,17 +1649,14 @@ function renderRipplesStats() {
     <div class="ripple-stat"><div class="ripple-stat-val">${streak > 0 ? streak + ' 🔥' : '—'}</div><div class="ripple-stat-lbl">Streak</div></div>
   `;
 }
-
 function getTodaySessions() {
   const tod = new Date(); tod.setHours(0,0,0,0);
   return sessions.filter(s => { const d=new Date(s.date); d.setHours(0,0,0,0); return d.getTime()===tod.getTime(); });
 }
-
 function getWeekSessions() {
   const ago = new Date(); ago.setDate(ago.getDate()-7);
   return sessions.filter(s => new Date(s.date) >= ago);
 }
-
 function calculateStreak() {
   if (!sessions.length) return 0;
   const hasDay = d => sessions.some(s => {
@@ -1824,7 +1676,6 @@ function calculateStreak() {
   }
   return streak;
 }
-
 function renderDailyStats() {
   const week = getWeekSessions();
   const totalHours = week.reduce((s,x) => s + x.hours, 0);
@@ -1836,15 +1687,12 @@ function renderDailyStats() {
   document.getElementById('statSessions').textContent = week.length || '—';
   document.getElementById('statStreak').textContent = streak > 0 ? `${streak} 🔥` : '—';
 }
-
 let carouselIndex = 0;
-
 function renderAreaCards() {
   carouselIndex = Math.min(carouselIndex, AREAS.length - 1);
   renderCarouselCard();
   renderCarouselDots();
 }
-
 function renderCarouselCard() {
   const hero = document.getElementById('areaHeroCard');
   if (!hero) return;
@@ -1861,7 +1709,6 @@ function renderCarouselCard() {
   const g = Math.max(0, parseInt(dark.slice(2,4),16) - 40).toString(16).padStart(2,'0');
   const b = Math.max(0, parseInt(dark.slice(4,6),16) - 40).toString(16).padStart(2,'0');
   const accentDark = `#${r}${g}${b}`;
-
   hero.innerHTML = `
     <div class="area-hero" style="--accent-color:${area.color};--accent-dark:${accentDark}" onclick="openSessionModal(AREAS[${carouselIndex}])">
       <div class="area-hero-inner">
@@ -1881,7 +1728,6 @@ function renderCarouselCard() {
       </div>
     </div>`;
 }
-
 function renderCarouselDots() {
   const dots = document.getElementById('carouselDots');
   if (!dots) return;
@@ -1889,25 +1735,21 @@ function renderCarouselDots() {
     `<div class="carousel-dot${i === carouselIndex ? ' active' : ''}" onclick="carouselGoTo(${i})"></div>`
   ).join('');
 }
-
 function carouselNext() {
   carouselIndex = (carouselIndex + 1) % AREAS.length;
   renderCarouselCard();
   renderCarouselDots();
 }
-
 function carouselPrev() {
   carouselIndex = (carouselIndex - 1 + AREAS.length) % AREAS.length;
   renderCarouselCard();
   renderCarouselDots();
 }
-
 function carouselGoTo(i) {
   carouselIndex = i;
   renderCarouselCard();
   renderCarouselDots();
 }
-
 // ══ AUTH ══
 function togglePw(inputId, btn) {
   const input = document.getElementById(inputId);
@@ -1915,12 +1757,10 @@ function togglePw(inputId, btn) {
   input.type = show ? 'text' : 'password';
   btn.textContent = show ? '🙈' : '👁';
 }
-
 const AUTH_PANELS = ['authSignIn','authSignUp','authCheckEmail','authForgotPw','authResetSent','authSetNewPw'];
 function hideAllAuthPanels() {
   AUTH_PANELS.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
 }
-
 function showAuthTab(tab) {
   document.querySelector('.auth-tabs').style.display = '';
   hideAllAuthPanels();
@@ -1930,13 +1770,11 @@ function showAuthTab(tab) {
   document.getElementById('siError').classList.add('hidden');
   document.getElementById('suError').classList.add('hidden');
 }
-
 function showForgotPassword() {
   document.querySelector('.auth-tabs').style.display = 'none';
   hideAllAuthPanels();
   document.getElementById('authForgotPw').style.display = '';
 }
-
 async function sendPasswordReset() {
   const email = document.getElementById('fpEmail').value.trim();
   const errEl = document.getElementById('fpError');
@@ -1948,7 +1786,6 @@ async function sendPasswordReset() {
   document.getElementById('resetSentAddr').textContent = `We've sent a reset link to ${email}.`;
   document.getElementById('authResetSent').style.display = '';
 }
-
 async function setNewPassword() {
   const pw = document.getElementById('newPwInput').value;
   const errEl = document.getElementById('newPwError');
@@ -1965,13 +1802,11 @@ async function setNewPassword() {
     showApp();
   }
 }
-
 function setAuthLoading(on) {
   document.getElementById('authLoading').classList.toggle('hidden', !on);
   document.getElementById('authSignIn').style.opacity = on ? '.4' : '1';
   document.getElementById('authSignUp').style.opacity = on ? '.4' : '1';
 }
-
 async function signIn() {
   const email    = document.getElementById('siEmail').value.trim();
   const password = document.getElementById('siPassword').value;
@@ -1983,7 +1818,6 @@ async function signIn() {
   setAuthLoading(false);
   if (error) { errEl.textContent = error.message; errEl.classList.remove('hidden'); }
 }
-
 async function signUp() {
   const name     = document.getElementById('suName').value.trim();
   const email    = document.getElementById('suEmail').value.trim();
@@ -2022,23 +1856,19 @@ async function signUp() {
     document.getElementById('authCheckEmail').style.display = '';
   }
 }
-
 async function signOut() {
   await sb.auth.signOut();
 }
-
 // ══ PROFILE ══
 function getProfile() {
   return store.get('profile') || {name: '', email: currentUser?.email || ''};
 }
-
 async function saveProfileFromSettings() {
   const name = document.getElementById('profileName').value.trim();
   store.set('profile', {name, email: currentUser?.email || ''});
   await saveSettings();
   showSettingsToast();
 }
-
 function getGreeting() {
   const h = new Date().getHours();
   const profile = getProfile();
@@ -2048,17 +1878,14 @@ function getGreeting() {
   if (h >= 17 && h < 21) return `Good evening${first}`;
   return `Working late${first}`;
 }
-
 function renderHomeCard() {
   const el = document.getElementById('homeCard');
   if (!el) return;
-
   const streak    = calculateStreak();
   const week      = getWeekSessions();
   const todaySess = getTodaySessions();
   const weekHours = week.reduce((s,x) => s + x.hours, 0);
   const todayHours= todaySess.reduce((s,x) => s + x.hours, 0);
-
   // ── Last session nudge ──
   let lastSessionNudge = '';
   if (sessions.length > 0 && todaySess.length === 0) {
@@ -2068,7 +1895,6 @@ function renderHomeCard() {
     else if (daysSince === 2) lastSessionNudge = 'It\'s been a couple of days. Whenever you\'re ready.';
     else if (daysSince >= 3) lastSessionNudge = 'Been a while. Starting is the hardest part.';
   }
-
   // ── Sub-line ──
   let subLine;
   if (streak >= 3) {
@@ -2082,7 +1908,6 @@ function renderHomeCard() {
   } else {
     subLine = 'Pick a focus area below and start when you\'re ready.';
   }
-
   // ── Area nudge ──
   let nudge = '';
   const areaProgress = AREAS.map(area => {
@@ -2095,12 +1920,11 @@ function renderHomeCard() {
     const left = Math.max(0, behind.goal - behind.done).toFixed(1);
     nudge = `${behind.area.name} is ${behind.done === 0 ? 'untouched this week' : `${left}h short of your weekly goal`}.`;
   }
-
   // ── Recent sessions ──
   const recentHTML = sessions.length
     ? '<div class="recent-header">Recent Sessions</div>' +
       sessions.slice(0, 3).map(s => {
-        const area = AREAS.find(a => a.name === s.area) || {color:'#667eea', name: s.area};
+        const area = AREAS.find(a => a.name === s.area) || {color:'#8a9a86', name: s.area};
         const d = new Date(s.date);
         const dateStr = d.toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'});
         return `<div class="recent-entry" style="border-left-color:${area.color}">
@@ -2110,7 +1934,6 @@ function renderHomeCard() {
         </div>`;
       }).join('')
     : '';
-
   // ── Quick-start banner (first session of the day) ──
   let quickBannerHTML = '';
   if (todaySess.length === 0) {
@@ -2131,13 +1954,11 @@ function renderHomeCard() {
         <div class="quick-start-cta">Let's go →</div>
       </div>`;
   }
-
   el.innerHTML = `
     <div class="home-card-title">${getGreeting()}</div>
     <div class="home-card-desc">${subLine}</div>
     ${nudge ? `<div class="home-card-nudge">${nudge}</div>` : ''}
     ${recentHTML}`;
-
   // Insert banner before home card (after it in the DOM)
   const existingBanner = document.getElementById('quickStartBanner');
   if (existingBanner) existingBanner.remove();
@@ -2148,7 +1969,6 @@ function renderHomeCard() {
     el.parentNode.insertBefore(wrapper, el.nextSibling);
   }
 }
-
 // ══ QUICK START ══
 function quickStart() {
   // Pick most-behind area, default to first
@@ -2162,7 +1982,6 @@ function quickStart() {
   // Navigate carousel to that area
   const idx = AREAS.findIndex(a => a.name === area.name);
   if (idx >= 0) { carouselIndex = idx; renderCarouselCard(); renderCarouselDots(); }
-
   // Open modal with 5-min preset and placeholder task
   openSessionModal(area);
   setTimeout(() => {
@@ -2182,7 +2001,6 @@ function quickStart() {
     }
   }, 50);
 }
-
 // ══ SESSION MODAL ══
 function openSessionModal(area) {
   const modal = document.getElementById('sessionModal');
@@ -2191,35 +2009,28 @@ function openSessionModal(area) {
   document.getElementById('sessionTask').value = '';
   document.getElementById('sessionNotes').value = '';
   document.getElementById('modalStartBtn').style.background = area.color;
-
   // Autocomplete from history
   const datalist = document.getElementById('taskSuggestions');
   datalist.innerHTML = '';
   const recent = [...new Set(sessions.filter(s=>s.area===area.name && s.task).map(s=>s.task))].slice(0,8);
   recent.forEach(t => { const o=document.createElement('option'); o.value=t; datalist.appendChild(o); });
-
   // Store area for beginSession
   modal.dataset.area = area.name;
   // icon no longer needed on dataset
-
   // Reset duration to current selectedDuration
   modalDuration = selectedDuration;
   document.querySelectorAll('.duration-opt').forEach(b => {
     b.classList.toggle('active', parseInt(b.textContent) === modalDuration);
   });
-
   modal.classList.add('active');
   setTimeout(() => document.getElementById('sessionTask').focus(), 320);
 }
-
 function closeSessionModal() {
   document.getElementById('sessionModal').classList.remove('active');
 }
-
 function handleModalBackdrop(e) {
   if (e.target === document.getElementById('sessionModal')) closeSessionModal();
 }
-
 function setModalDuration(mins, el) {
   modalDuration = mins;
   document.querySelectorAll('.duration-opt').forEach(b => b.classList.remove('active'));
@@ -2227,7 +2038,6 @@ function setModalDuration(mins, el) {
   const ci = document.getElementById('modalCustom');
   if (ci) ci.value = '';
 }
-
 function setCustomModalDuration(input) {
   const mins = parseInt(input.value);
   if (mins >= 1 && mins <= 240) {
@@ -2235,7 +2045,6 @@ function setCustomModalDuration(input) {
     document.querySelectorAll('.duration-opt').forEach(b => b.classList.remove('active'));
   }
 }
-
 function setCustomTimerDuration(input) {
   const mins = parseInt(input.value);
   if (mins >= 1 && mins <= 240) {
@@ -2244,39 +2053,32 @@ function setCustomTimerDuration(input) {
     if (!isRunning) { timeRemaining = mins * 60; isWorkPhase = true; updateTimerDisplay(); updateTimerRing(); }
   }
 }
-
 function beginSession() {
   const modal   = document.getElementById('sessionModal');
   const task    = document.getElementById('sessionTask').value.trim();
   const notes   = document.getElementById('sessionNotes').value.trim();
   const areaName = modal.dataset.area;
-
   if (!task) { document.getElementById('sessionTask').focus(); return; }
-
   activeArea = areaName;
   activeTask = task;
   selectedDuration = modalDuration;
   sessionElapsed = 0;
   sessionStartedAt = null;
   pomodorosCompleted = 0;
-
   // Pre-fill session notes into celebration
   document.getElementById('celebNotes').value = notes;
-
   // Setup timer
   clearInterval(timerInterval);
   isRunning = false; isWorkPhase = true;
   timeRemaining = selectedDuration * 60;
   updateTimerDisplay();
   updateTimerRing();
-
   // Update timer labels
   document.getElementById('timerSessionLabel').textContent = areaName;
   document.getElementById('timerTaskLabel').textContent = task;
   document.getElementById('startBtn').textContent = 'Start';
   const endBtn = document.getElementById('endSessionBtn');
   if (endBtn) endBtn.style.display = 'block';
-
   closeSessionModal();
   // Show timer view in focus tab
   selectedFocusArea = areaName;
@@ -2284,7 +2086,6 @@ function beginSession() {
   document.getElementById('focusTimerSection').style.display = '';
   switchTab('focus', document.querySelector('[data-tab="focus"]'));
 }
-
 // ══ TIMER ══
 function setTimerDuration(mins, el) {
   document.querySelectorAll('.timer-option').forEach(o => o.classList.remove('active'));
@@ -2294,7 +2095,6 @@ function setTimerDuration(mins, el) {
   if (ci) ci.value = '';
   if (!isRunning) { timeRemaining = mins*60; isWorkPhase = true; updateTimerDisplay(); updateTimerRing(); }
 }
-
 function updateTimerRing() {
   const ring = document.getElementById('timerRing');
   if (!ring) return;
@@ -2310,7 +2110,6 @@ function updateTimerRing() {
   const container = document.querySelector('.timer-container');
   if (container) container.style.setProperty('--ring-glow-bg', glowColor);
 }
-
 function updateTimerDisplay() {
   const m = Math.floor(timeRemaining/60);
   const s = timeRemaining % 60;
@@ -2319,7 +2118,6 @@ function updateTimerDisplay() {
   document.getElementById('timerPhase').textContent = isWorkPhase ? '💼 Work Time' : '☕ Break Time';
   updateTimerRing();
 }
-
 function toggleTimer() {
   isRunning = !isRunning;
   document.getElementById('startBtn').textContent = isRunning ? 'Pause' : 'Resume';
@@ -2338,12 +2136,10 @@ function toggleTimer() {
   }
   updateSessionActiveUI();
 }
-
 function updateTimer() {
   const elapsed = Math.floor((Date.now()-timerStartTime)/1000);
   timeRemaining = Math.max(0, pausedTimeRemaining - elapsed);
   playTick();
-
   if (timeRemaining <= 0) {
     clearInterval(timerInterval);
     isRunning = false;
@@ -2353,7 +2149,6 @@ function updateTimer() {
     // Restore tabs as soon as timer ends
     const tabBar = document.getElementById('tabBar');
     if (tabBar) tabBar.classList.remove('focus-mode');
-
     if (isWorkPhase) {
       pomodorosCompleted++;
       isWorkPhase = false;
@@ -2373,7 +2168,6 @@ function updateTimer() {
     updateSessionActiveUI();
   }
 }
-
 function resetTimer() {
   clearInterval(timerInterval);
   isRunning = false; isWorkPhase = true;
@@ -2385,7 +2179,6 @@ function resetTimer() {
   const endBtn = document.getElementById('endSessionBtn');
   if (endBtn) endBtn.style.display = 'none';
 }
-
 function endSession() {
   if (!activeArea) return;
   clearInterval(timerInterval);
@@ -2400,7 +2193,6 @@ function endSession() {
   if (endBtn) endBtn.style.display = 'none';
   showCelebration(true);
 }
-
 function skipPhase() {
   clearInterval(timerInterval);
   isRunning = false;
@@ -2410,12 +2202,10 @@ function skipPhase() {
   updateTimerDisplay();
   document.getElementById('startBtn').textContent = 'Start';
 }
-
 // ══ CELEBRATION ══
 function showCelebration(isWork) {
   const overlay = document.getElementById('celebrationOverlay');
   const workMins = Math.round(sessionElapsed / 60) || selectedDuration;
-
   document.getElementById('celebEmoji').textContent = isWork ? '🎉' : '💪';
   document.getElementById('celebTitle').textContent = isWork ? 'Session Complete!' : 'Break Over!';
   document.getElementById('celebMsg').textContent = isWork
@@ -2424,19 +2214,16 @@ function showCelebration(isWork) {
   document.getElementById('celebArea').textContent = activeArea || '—';
   document.getElementById('celebTime').textContent = `${workMins}m`;
   document.getElementById('celebPoms').textContent = pomodorosCompleted;
-
   overlay.classList.remove('hidden');
   requestAnimationFrame(() => overlay.classList.add('active'));
   launchConfetti();
 }
-
 function closeCelebration() {
   const o = document.getElementById('celebrationOverlay');
   o.classList.remove('active');
   setTimeout(() => o.classList.add('hidden'), 400);
   if (confettiFrame) { cancelAnimationFrame(confettiFrame); confettiFrame = null; }
 }
-
 async function saveAndClose() {
   const notes = document.getElementById('celebNotes').value.trim();
   const workMins = Math.round(sessionElapsed / 60) || selectedDuration;
@@ -2453,7 +2240,6 @@ async function saveAndClose() {
       user_id: currentUser.id,
       ...newSession
     }).select().single();
-
     if (error) {
       // Surface the error clearly — session won't survive a refresh
       console.error('Session save failed:', error);
@@ -2465,19 +2251,16 @@ async function saveAndClose() {
     } else if (data) {
       newSession.id = data.id;
     }
-
     const wasFirstToday = getTodaySessions().length === 0;
     sessions.unshift(newSession);
     // Cache locally as resilience backup
     cacheSessionsLocally();
-
     if (wasFirstToday) {
       document.getElementById('celebEmoji').textContent = '🌟';
       document.getElementById('celebTitle').textContent = 'First one of the day!';
       document.getElementById('celebMsg').textContent = 'That\'s the hardest part done. Everything else is momentum.';
       launchConfetti();
     }
-
     // If there was an error, keep the overlay open so user sees the warning
     if (error) return;
   }
@@ -2489,12 +2272,10 @@ async function saveAndClose() {
   if (endBtn) endBtn.style.display = 'none';
   resetFocusToPreSession();
 }
-
 function cacheSessionsLocally() {
   // Keep last 100 sessions in localStorage as a fallback if Supabase is unavailable
   store.set('sessions_cache', sessions.slice(0, 100));
 }
-
 function startBreakFromCeleb() {
   // save first
   saveAndClose();
@@ -2507,13 +2288,12 @@ function startBreakFromCeleb() {
   pausedTimeRemaining = timeRemaining;
   timerInterval = setInterval(updateTimer, 1000);
 }
-
 // ══ CONFETTI ══
 function launchConfetti() {
   const canvas = document.getElementById('confettiCanvas');
   const ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-  const colors = ['#667eea','#764ba2','#f093fb','#ffd700','#ff6b6b','#4ecdc4','#a8edea','#ffffff'];
+  const colors = ['#8a9a86','#b08968','#7d8a99','#e8dfd0','#d4a574','#9c9284','#ffffff','#c9b896'];
   const particles = Array.from({length:120}, () => ({
     x:Math.random()*canvas.width, y:-10-Math.random()*160,
     w:7+Math.random()*9, h:4+Math.random()*5,
@@ -2537,13 +2317,11 @@ function launchConfetti() {
   }
   animate();
 }
-
 // ══ PROGRESS ══
 function renderProgress() {
   renderWeeklyProgress();
   renderMonthlyProgress();
 }
-
 function renderWeeklyProgress() {
   const week = getWeekSessions();
   const bars = document.getElementById('weeklyProgressBars');
@@ -2561,7 +2339,6 @@ function renderWeeklyProgress() {
     bars.appendChild(el);
   });
 }
-
 function renderMonthlyProgress() {
   const now = new Date();
   const chart = document.getElementById('monthlyChart');
@@ -2582,7 +2359,6 @@ function renderMonthlyProgress() {
     chart.appendChild(bar);
   });
 }
-
 // ══ HISTORY ══
 function renderHistory() {
   const log = document.getElementById('sessionLog');
@@ -2592,7 +2368,6 @@ function renderHistory() {
   }
   log.innerHTML = '';
   const getArea = name => AREAS.find(a => a.name === name);
-
   // Group sessions by local date, most recent first
   const groups = new Map();
   sessions.slice().forEach(s => {
@@ -2607,12 +2382,10 @@ function renderHistory() {
     if (!groups.has(label)) groups.set(label, []);
     groups.get(label).push(s);
   });
-
   let first = true;
   groups.forEach((daySessions, dateLabel) => {
     const totalHours = daySessions.reduce((sum, s) => sum + s.hours, 0);
     const count = daySessions.length;
-
     const accordion = document.createElement('div');
     accordion.className = `log-accordion${first ? ' open' : ''}`;
     accordion.innerHTML = `
@@ -2624,11 +2397,10 @@ function renderHistory() {
         </div>
       </div>
       <div class="log-accordion-body"></div>`;
-
     const body = accordion.querySelector('.log-accordion-body');
     daySessions.forEach(s => {
       const a = getArea(s.area);
-      const color = a ? a.color : '#667eea';
+      const color = a ? a.color : '#8a9a86';
       const d = new Date(s.date);
       const el = document.createElement('div');
       el.className = 'log-entry';
@@ -2643,12 +2415,10 @@ function renderHistory() {
         ${s.pomodoros ? `<div style="margin-top:5px;font-size:.82em;font-weight:700;color:${color}">🍅 ${s.pomodoros} pomodoro${s.pomodoros > 1 ? 's' : ''}</div>` : ''}`;
       body.appendChild(el);
     });
-
     log.appendChild(accordion);
     first = false;
   });
 }
-
 // ══ SAVE SETTINGS ══
 async function saveSettings() {
   if (!currentUser) return;
@@ -2666,7 +2436,6 @@ async function saveSettings() {
     .select('user_id')
     .eq('user_id', currentUser.id)
     .maybeSingle();
-
   let error;
   if (existing) {
     // Row exists — update it
@@ -2682,7 +2451,6 @@ async function saveSettings() {
   }
   if (error) console.error('saveSettings error:', error);
 }
-
 // ══ SETTINGS ══
 function renderSettings() {
   // Profile
@@ -2702,7 +2470,6 @@ function renderSettings() {
   if (btnDark) btnDark.classList.toggle('active', mode === 'dark');
   if (btnLight) btnLight.classList.toggle('active', mode === 'light');
 }
-
 function renderGoalGrid() {
   const grid = document.getElementById('goalGrid');
   grid.innerHTML = '';
@@ -2719,7 +2486,6 @@ function renderGoalGrid() {
     grid.appendChild(card);
   });
 }
-
 async function saveGoals() {
   AREAS.forEach(area => {
     const w = parseFloat(document.getElementById(`goal-w-${area.name}`).value);
@@ -2729,7 +2495,6 @@ async function saveGoals() {
   await saveSettings();
   showSettingsToast();
 }
-
 function renderAreaEditGrid() {
   const grid = document.getElementById('areaEditGrid');
   if (!grid) return;
@@ -2781,7 +2546,6 @@ function renderAreaEditGrid() {
     grid.appendChild(card);
   });
 }
-
 async function saveAreas() {
   const oldNames = AREAS.map(a => a.name);
   const newAreas = AREAS.map((area, i) => ({
@@ -2799,7 +2563,6 @@ async function saveAreas() {
   await saveSettings();
   showSettingsToast();
 }
-
 function renderColorOptions() {
   const c = document.getElementById('colorOptions');
   c.innerHTML = '';
@@ -2818,7 +2581,6 @@ function renderColorOptions() {
     c.appendChild(el);
   });
 }
-
 // ══ SETTINGS TOAST ══
 let toastTimer = null;
 function showSettingsToast() {
@@ -2835,14 +2597,12 @@ function toastGoHome() {
   dismissToast();
   switchTab('focus', document.querySelector('[data-tab="focus"]'));
 }
-
 function applyTheme(t) {
   const r = document.documentElement.style;
   r.setProperty('--primary', t.primary);
   r.setProperty('--primary-dark', t.primaryDark || t.primary);
   r.setProperty('--secondary', t.secondary || t.primary);
 }
-
 // ══ APPEARANCE ══
 async function setAppearance(mode) {
   if (mode === 'light') document.body.classList.add('light-mode');
@@ -2854,7 +2614,6 @@ async function setAppearance(mode) {
   if (btnLight) btnLight.classList.toggle('active', mode === 'light');
   await saveSettings();
 }
-
 function renderAreaResetGrid() {
   const grid = document.getElementById('areaResetGrid');
   if (!grid) return;
@@ -2870,7 +2629,6 @@ function renderAreaResetGrid() {
     grid.appendChild(btn);
   });
 }
-
 async function resetAreaData(areaName) {
   const count = sessions.filter(s => s.area === areaName).length;
   if (!count) { alert(`No sessions logged for ${areaName}.`); return; }
@@ -2883,7 +2641,6 @@ async function resetAreaData(areaName) {
     renderAreaResetGrid();
   }
 }
-
 async function resetAllData() {
   if (confirm('Delete ALL session data? This cannot be undone.')) {
     if (confirm('Permanently remove all logged sessions?')) {
@@ -2896,7 +2653,6 @@ async function resetAllData() {
     }
   }
 }
-
 // ══ EXPORT HISTORY ══
 function downloadHistory() {
   if (!sessions.length) { alert('No sessions to export yet.'); return; }
@@ -2925,7 +2681,6 @@ function downloadHistory() {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
-
 // ══ AUDIO ══
 function initAudio() {
   if (!audioContext) audioContext = new (window.AudioContext||window.webkitAudioContext)();
@@ -2958,11 +2713,8 @@ function toggleSound() {
   soundEnabled = document.getElementById('soundToggle').checked;
   if (soundEnabled) { initAudio(); playTick(); }
 }
-
-
 // ── START ──
 init();
-
 // ── SERVICE WORKER ──
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
