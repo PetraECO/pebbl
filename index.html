@@ -93,6 +93,10 @@ button:disabled{opacity:.6;cursor:default}
 .logrow{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 14px}
 .logrow b{font-weight:500;font-size:12.5px;min-width:62px;max-width:84px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .logrow span{color:var(--sub);font-size:12px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.xbtn{background:none;border:0;color:var(--ft);font-size:12px;padding:4px 7px;border-radius:7px;white-space:nowrap;flex-shrink:0}
+.xbtn:hover{color:var(--tx);background:var(--chip)}
+.xbtn.on{color:var(--err);border:1px solid var(--err);font-weight:600}
+.dgrid{display:flex;flex-direction:column;gap:8px}
 .logrow small{color:var(--ft);font-size:11px;white-space:nowrap}
 .field{width:100%;background:var(--frame);border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:16px}
 textarea.field{min-height:66px;resize:none;background:var(--card);border-radius:12px;font-size:16px}
@@ -163,7 +167,7 @@ var app=document.getElementById('app');
 var U=null,loaded=false,offline=false,recovery=false,signingUp=false,entering=false,dataLoaded=false;
 var S={name:'',areas:[],goals:{},appearance:null};
 var sessions=[];
-var loadErr='',tab='focus',view='welcome',dur=25,showAll=false,dropping=false,busy=false,checkEmail='';
+var loadErr='',limit=6,confirmKey=null,confirmClear=false,tab='focus',view='welcome',dur=25,showAll=false,dropping=false,busy=false,checkEmail='';
 var run=null,celeb=null;
 var soundOn=lsGet('pebbl.sound')!==false,lastSec=-1,audioCtx=null,saveT=null,toastT=null,savedT=null;
 
@@ -566,12 +570,12 @@ function cairn(a,i,hrs,g){
     +'<div style="font-weight:500;font-size:12.5px;margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+nm+'</div><div style="color:var(--sub);font-size:11px">'+(hrs>0?hrs.toFixed(1):'—')+' / '+g+'h</div></div>';
 }
 function ripplesView(st){
-  var lim=showAll?60:6;
+  var lim=limit;
   var rows=sessions.slice(0,lim).map(function(e){
     var txt=e.notes||e.task;
-    return '<div class="logrow">'+blob(13,10,col(e.area))+'<b>'+esc(areaLabel(e.area))+'</b><span>'+(txt?esc(txt):'—')+'</span><small>'+Math.max(1,Math.round(e.hours*60))+'m · '+when(new Date(e.date).getTime())+(e.pending?' · syncing':'')+'</small></div>';
+    return '<div class="logrow">'+blob(13,10,col(e.area))+'<b>'+esc(areaLabel(e.area))+'</b><span>'+(txt?esc(txt):'—')+'</span><small>'+Math.max(1,Math.round(e.hours*60))+'m · '+when(new Date(e.date).getTime())+(e.pending?' · syncing':'')+'</small><button class="xbtn'+(confirmKey===rk(e)?' on':'')+'" data-act="delrow" data-k="'+esc(rk(e))+'" aria-label="Delete this pebble">'+(confirmKey===rk(e)?'Delete?':'✕')+'</button></div>';
   }).join('')||'<div class="logrow"><span style="white-space:normal">Your pebbles land here once you drop the first one.</span></div>';
-  var more=sessions.length>6?'<button class="link" data-act="more" style="display:block;margin:10px auto 0">'+(showAll?'Show fewer':'Show more')+'</button>':'';
+  var more='<div style="display:flex;justify-content:center;gap:8px;margin-top:10px">'+(sessions.length>lim?'<button class="link" data-act="more">Show '+Math.min(20,sessions.length-lim)+' more</button>':'')+(lim>6?'<button class="link" data-act="fewer">Show fewer</button>':'')+'</div>';
   return '<div style="padding-top:24px"><h1 class="disp h2" style="margin-bottom:16px">Ripples</h1>'
     +'<div style="display:flex;gap:8px;margin-bottom:22px"><div class="stat"><b>'+st.tot.toFixed(1)+'h</b><small>LAST 7 DAYS</small></div><div class="stat"><b>'+st.n+'</b><small>PEBBLES</small></div><div class="stat"><b style="color:var(--ac2)">'+st.streak+'</b><small>DAY RIPPLE</small></div></div>'
     +'<p class="lbl">Your cairns · one stone per hour</p>'
@@ -592,6 +596,7 @@ function youView(st){
     +'<div class="card"><p class="lbl">Sound</p><div class="seg"><button data-act="sound" aria-pressed="'+soundOn+'">Tick &amp; chime: '+(soundOn?'On':'Off')+'</button></div></div>'
     +'<div class="card"><p class="lbl">Your areas</p><div style="display:flex;flex-direction:column;gap:10px">'+rows+'</div><p style="color:var(--ft);font-size:11px;margin:12px 0 0">Call them anything. Past pebbles follow the new name when you leave the field.</p></div>'
     +'<p class="saved" id="savedmsg" role="status"></p>'
+    +'<div class="card"><p class="lbl">Your data</p><div class="dgrid"><div class="seg"><button data-act="dljson">Download JSON</button><button data-act="dlcsv">Download CSV</button></div><button class="ghost" data-act="clearall" style="padding:11px 20px;'+(confirmClear?'border-color:var(--err);color:var(--err)':'')+'">'+(confirmClear?'Tap again to delete all '+sessions.length+' pebbles':'Delete all pebbles')+'</button></div><p style="color:var(--ft);font-size:11px;margin:12px 0 0">Downloads include your name, areas, goals and every pebble. Deleting pebbles can\'t be undone.</p></div>'
     +'<div class="card" style="margin-top:6px"><p class="lbl">Account</p><p class="sub" style="margin-bottom:12px;overflow-wrap:anywhere">'+esc(U?U.email:'')+'</p><button class="ghost" data-act="signout" style="padding:11px 28px">Sign out</button></div></div>';
 }
 function navHTML(){
@@ -605,6 +610,42 @@ function render(){
 }
 
 /* ══ ACTIONS ══ */
+function rk(e){return String(e.id!=null?e.id:e.localId)}
+async function delRow(k){
+  if(confirmKey!==k){confirmKey=k;render();setTimeout(function(){if(confirmKey===k){confirmKey=null;render()}},4000);return}
+  confirmKey=null;
+  var i=-1;for(var j=0;j<sessions.length;j++)if(rk(sessions[j])===k){i=j;break}
+  if(i<0){render();return}
+  var e=sessions[i];
+  if(e.pending){
+    var pend=(lsGet(uk('pending'))||[]).filter(function(p){return p.localId!==e.localId});lsSet(uk('pending'),pend);
+  }else{
+    var r=await sb.from('sessions').delete().eq('id',e.id).eq('user_id',U.id);
+    if(r.error){console.error(r.error);toast('Couldn\'t delete that one. '+(r.error.message||''),4500);render();return}
+  }
+  sessions.splice(i,1);cacheAll();render();
+}
+async function clearAll(){
+  if(!confirmClear){confirmClear=true;render();setTimeout(function(){if(confirmClear){confirmClear=false;render()}},5000);return}
+  confirmClear=false;
+  var r=await sb.from('sessions').delete().eq('user_id',U.id);
+  if(r.error){console.error(r.error);toast('Couldn\'t delete. '+(r.error.message||''),4500);render();return}
+  lsSet(uk('pending'),[]);sessions=[];limit=6;cacheAll();toast('All pebbles deleted.');render();
+}
+function exportData(kind){
+  var rows=sessions.map(function(e){return {date:e.date,area:areaLabel(e.area),minutes:Math.max(1,Math.round(e.hours*60)),hours:e.hours,notes:e.notes||'',task:e.task||'',completed_full_timer:!!e.pomodoros}});
+  var out,type,ext;
+  if(kind==='json'){
+    out=JSON.stringify({exported_at:new Date().toISOString(),email:U.email,name:S.name,areas:S.areas,weekly_goals:S.goals,appearance:S.appearance,sessions:rows},null,2);type='application/json';ext='json';
+  }else{
+    var head=['date','area','minutes','hours','notes','task','completed_full_timer'];
+    var q=function(v){v=String(v);if(/^[=+\-@\t\r]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'};
+    out=[head.join(',')].concat(rows.map(function(r){return head.map(function(h){return q(r[h])}).join(',')})).join('\r\n');type='text/csv';ext='csv';
+  }
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([out],{type:type+';charset=utf-8'}));
+  a.download='pebbl-data-'+new Date().toISOString().slice(0,10)+'.'+ext;document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1000);
+}
 async function renameArea(i,input){
   var old=S.areas[i].name,nn=input.value.trim();
   if(!nn||nn===old){input.value=old;return}
@@ -638,7 +679,12 @@ function act(a,d,el){
   else if(a==='resume'){run.endAt=Date.now()+run.remaining*1000;run.running=true;saveRun();holdAwake(true,run.remaining);render()}
   else if(a==='end'){finishRun()}
   else if(a==='done'){saveCelebration()}
-  else if(a==='more'){showAll=!showAll;render()}
+  else if(a==='more'){limit+=20;render()}
+  else if(a==='fewer'){limit=6;render()}
+  else if(a==='delrow'){delRow(d.k)}
+  else if(a==='clearall'){clearAll()}
+  else if(a==='dljson'){exportData('json')}
+  else if(a==='dlcsv'){exportData('csv')}
   else if(a==='theme'){S.appearance=d.t;lsSet('appearance',d.t);applyAppearance(d.t);render();scheduleSave()}
   else if(a==='sound'){soundOn=!soundOn;lsSet('pebbl.sound',soundOn);if(soundOn){initAudio();tick()}if(run&&run.running)holdAwake(true,remaining());render()}
   else if(a==='retry'){retryLoad()}
