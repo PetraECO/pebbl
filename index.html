@@ -165,7 +165,7 @@ var S={name:'',areas:[],goals:{},appearance:null};
 var sessions=[];
 var loadErr='',tab='focus',view='welcome',dur=25,showAll=false,dropping=false,busy=false,checkEmail='';
 var run=null,celeb=null;
-var audioCtx=null,saveT=null,toastT=null,savedT=null;
+var soundOn=lsGet('pebbl.sound')!==false,lastSec=-1,audioCtx=null,saveT=null,toastT=null,savedT=null;
 
 /* ══ HELPERS ══ */
 function $(id){return document.getElementById(id)}
@@ -416,8 +416,9 @@ function tone(f,t0,d,v){
   g.gain.setValueAtTime(.0001,t0);g.gain.exponentialRampToValueAtTime(v,t0+.03);g.gain.exponentialRampToValueAtTime(.0001,t0+d);
   o.start(t0);o.stop(t0+d+.05);
 }
+function tick(){try{if(soundOn&&audioCtx&&audioCtx.state==='running')tone(600,audioCtx.currentTime,.08,.08)}catch(e){}}
 function chime(){
-  try{if(audioCtx){var t=audioCtx.currentTime;tone(523.25,t,.5,.06);tone(659.25,t+.18,.5,.06);tone(783.99,t+.36,.9,.06)}}catch(e){}
+  try{if(soundOn&&audioCtx){initAudio();var t=audioCtx.currentTime;tone(523.25,t,.5,.2);tone(659.25,t+.18,.5,.2);tone(783.99,t+.36,.9,.2)}}catch(e){}
   try{if(navigator.vibrate)navigator.vibrate([120,60,120])}catch(e){}
 }
 function remaining(){if(!run)return 0;return run.running?Math.max(0,Math.ceil((run.endAt-Date.now())/1000)):run.remaining}
@@ -451,6 +452,7 @@ setInterval(function(){
   if(run&&run.running){
     var rem=remaining();
     document.title=String(Math.floor(rem/60)).padStart(2,'0')+':'+String(rem%60).padStart(2,'0')+' · Pebbl';
+    if(rem!==lastSec){lastSec=rem;if(rem>0)tick()}
     if(rem<=0)finishRun();else if(tab==='focus')tickUI();
   }else if(document.title!=='Pebbl'){document.title='Pebbl'}
 },250);
@@ -551,6 +553,7 @@ function youView(st){
   return '<div style="padding-top:24px"><div style="display:flex;align-items:center;gap:16px;margin-bottom:20px"><svg viewBox="-40 -40 80 80" width="72" height="72" style="flex-shrink:0" role="img" aria-label="Your pebble">'+peb(0,0,1.25,'var(--ac)')+'<text x="0" y="8" text-anchor="middle" font-size="24" font-weight="600" fill="var(--acx)">'+esc(ini)+'</text></svg><div style="min-width:0"><div class="disp h2" style="overflow:hidden;text-overflow:ellipsis">'+esc(nm||'You')+'</div><div class="sub" style="font-size:12.5px">'+(st.streak?st.streak+'-day ripple · ':'')+st.n+' pebbles in 7 days</div></div></div>'
     +'<div class="card"><p class="lbl"><label for="nm">Name</label></p><input id="nm" class="field" value="'+esc(S.name)+'" maxlength="40" placeholder="Your name" autocomplete="off"></div>'
     +'<div class="card"><p class="lbl">Appearance</p><div class="tiles">'+tile('dark','River',eff)+tile('light','Paper',eff)+'</div></div>'
+    +'<div class="card"><p class="lbl">Sound</p><div class="seg"><button data-act="sound" aria-pressed="'+soundOn+'">Tick &amp; chime: '+(soundOn?'On':'Off')+'</button></div></div>'
     +'<div class="card"><p class="lbl">Your areas</p><div style="display:flex;flex-direction:column;gap:10px">'+rows+'</div><p style="color:var(--ft);font-size:11px;margin:12px 0 0">Call them anything. Past pebbles follow the new name when you leave the field.</p></div>'
     +'<p class="saved" id="savedmsg" role="status"></p>'
     +'<div class="card" style="margin-top:6px"><p class="lbl">Account</p><p class="sub" style="margin-bottom:12px;overflow-wrap:anywhere">'+esc(U?U.email:'')+'</p><button class="ghost" data-act="signout" style="padding:11px 28px">Sign out</button></div></div>';
@@ -601,6 +604,7 @@ function act(a,d,el){
   else if(a==='done'){saveCelebration()}
   else if(a==='more'){showAll=!showAll;render()}
   else if(a==='theme'){S.appearance=d.t;lsSet('appearance',d.t);applyAppearance(d.t);render();scheduleSave()}
+  else if(a==='sound'){soundOn=!soundOn;lsSet('pebbl.sound',soundOn);if(soundOn){initAudio();tick()}render()}
   else if(a==='retry'){retryLoad()}
   else if(a==='signout'){flushSave();sb.auth.signOut()}
 }
@@ -638,6 +642,7 @@ document.addEventListener('visibilitychange',function(){
   else if(run&&run.running){if(remaining()<=0)finishRun();else tickUI()}
 });
 window.addEventListener('pagehide',flushSave);
+document.addEventListener('pointerdown',initAudio);
 window.addEventListener('online',function(){if(U&&(offline||(lsGet(uk('pending'))||[]).length))retryLoad()});
 
 /* ══ START ══ */
