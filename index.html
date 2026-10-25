@@ -554,7 +554,7 @@ function celebView(){
     +'<h1 class="disp h1" style="margin-bottom:6px">Pebble dropped.</h1><p class="sub" style="margin-bottom:20px">'+KUDOS[c.k%KUDOS.length]+'</p>'
     +'<div style="display:flex;gap:10px;margin-bottom:20px;max-width:100%">'+st(c.mins,'MINUTES')+st(c.area==='Freeform'?'Free':c.area,'AREA')+'</div>'
     +'<textarea id="note" class="field" maxlength="140" placeholder="What did you get done? (optional)" aria-label="What did you get done?" style="margin-bottom:16px">'+esc(c.note||'')+'</textarea>'
-    +'<button class="btn btn-sm" data-act="done">Done</button></div>';
+    +'<button class="btn btn-sm" data-act="done">Done</button><button class="link" data-act="share" style="margin-top:12px">Share Pebbl with a friend</button></div>';
 }
 function focusView(st){return run?activeView():celeb?celebView():preView(st)}
 
@@ -596,6 +596,7 @@ function youView(st){
     +'<div class="card"><p class="lbl">Sound</p><div class="seg"><button data-act="sound" aria-pressed="'+soundOn+'">Tick &amp; chime: '+(soundOn?'On':'Off')+'</button></div></div>'
     +'<div class="card"><p class="lbl">Your areas</p><div style="display:flex;flex-direction:column;gap:10px">'+rows+'</div><p style="color:var(--ft);font-size:11px;margin:12px 0 0">Call them anything. Past pebbles follow the new name when you leave the field.</p></div>'
     +'<p class="saved" id="savedmsg" role="status"></p>'
+    +'<div class="card"><p class="lbl">Share Pebbl</p><p class="sub" style="font-size:12.5px;margin-bottom:12px">Know someone who stalls before they start?</p><button class="ghost" data-act="share" style="padding:11px 28px">Share Pebbl</button></div>'
     +'<div class="card"><p class="lbl">Your data</p><div class="dgrid"><div class="seg"><button data-act="dljson">Download JSON</button><button data-act="dlcsv">Download CSV</button></div><button class="ghost" data-act="clearall" style="padding:11px 20px;'+(confirmClear?'border-color:var(--err);color:var(--err)':'')+'">'+(confirmClear?'Tap again to delete all '+sessions.length+' pebbles':'Delete all pebbles')+'</button></div><p style="color:var(--ft);font-size:11px;margin:12px 0 0">Downloads include your name, areas, goals and every pebble. Deleting pebbles can\'t be undone.</p></div>'
     +'<div class="card" style="margin-top:6px"><p class="lbl">Account</p><p class="sub" style="margin-bottom:12px;overflow-wrap:anywhere">'+esc(U?U.email:'')+'</p><button class="ghost" data-act="signout" style="padding:11px 28px">Sign out</button></div></div>';
 }
@@ -610,6 +611,14 @@ function render(){
 }
 
 /* ══ ACTIONS ══ */
+var SHARE={title:'Pebbl',text:'Pebbl is a focus app for the first five ugly minutes, when you\'d rather do anything else. Drop your first pebbl.',url:'https://usepebbl.app'};
+async function shareApp(){
+  try{
+    if(navigator.share){await navigator.share(SHARE);return}
+  }catch(e){if(e&&e.name==='AbortError')return}
+  try{await navigator.clipboard.writeText(SHARE.text+' '+SHARE.url);toast('Link copied. Paste it anywhere.')}
+  catch(e){toast(SHARE.url,6000)}
+}
 function rk(e){return String(e.id!=null?e.id:e.localId)}
 async function delRow(k){
   if(confirmKey!==k){confirmKey=k;render();setTimeout(function(){if(confirmKey===k){confirmKey=null;render()}},4000);return}
@@ -683,6 +692,7 @@ function act(a,d,el){
   else if(a==='fewer'){limit=6;render()}
   else if(a==='delrow'){delRow(d.k)}
   else if(a==='clearall'){clearAll()}
+  else if(a==='share'){shareApp()}
   else if(a==='dljson'){exportData('json')}
   else if(a==='dlcsv'){exportData('csv')}
   else if(a==='theme'){S.appearance=d.t;lsSet('appearance',d.t);applyAppearance(d.t);render();scheduleSave()}
