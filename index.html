@@ -7,16 +7,6 @@
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#121314">
 <meta name="description" content="Focus tracking for people who aren't wired for hustle culture.">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Pebbl">
-<meta property="og:title" content="Pebbl: start where motivation doesn't">
-<meta property="og:description" content="A focus app for the first five ugly minutes. Drop your first pebbl.">
-<meta property="og:url" content="https://app.usepebbl.app">
-<meta property="og:image" content="https://app.usepebbl.app/og-image.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://app.usepebbl.app/og-image.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -55,7 +45,7 @@
 .pv-light{--pf:#f4f1eb;--pa:#b4566a}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{touch-action:manipulation;margin:0;background:var(--page);color:var(--tx);font-family:var(--body);font-size:14px;line-height:1.5;padding:28px 16px;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--page);color:var(--tx);font-family:var(--body);font-size:14px;line-height:1.5;padding:28px 16px;-webkit-tap-highlight-color:transparent}
 button,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 button:disabled{opacity:.6;cursor:default}
@@ -103,10 +93,6 @@ button:disabled{opacity:.6;cursor:default}
 .logrow{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 14px}
 .logrow b{font-weight:500;font-size:12.5px;min-width:62px;max-width:84px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .logrow span{color:var(--sub);font-size:12px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.xbtn{background:none;border:0;color:var(--ft);font-size:12px;padding:4px 7px;border-radius:7px;white-space:nowrap;flex-shrink:0}
-.xbtn:hover{color:var(--tx);background:var(--chip)}
-.xbtn.on{color:var(--err);border:1px solid var(--err);font-weight:600}
-.dgrid{display:flex;flex-direction:column;gap:8px}
 .logrow small{color:var(--ft);font-size:11px;white-space:nowrap}
 .field{width:100%;background:var(--frame);border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:16px}
 textarea.field{min-height:66px;resize:none;background:var(--card);border-radius:12px;font-size:16px}
@@ -152,22 +138,6 @@ textarea.field{min-height:66px;resize:none;background:var(--card);border-radius:
 </head>
 <body>
 <div class="frame" id="app"></div>
-<script>
-/* Shows any JavaScript error on screen, so problems on a phone can be read without a computer. */
-(function(){
-  function show(m){
-    try{
-      var d=document.getElementById('errbar');
-      if(!d){d=document.createElement('div');d.id='errbar';d.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:99;background:#7a1f1f;color:#fff;font:12px/1.4 monospace;padding:8px 10px;max-height:40vh;overflow:auto;pointer-events:none;white-space:pre-wrap';document.body.appendChild(d)}
-      d.textContent+=m+'\n';
-    }catch(e){}
-  }
-  window.addEventListener('error',function(e){show('ERR '+(e.message||'')+' @'+(e.lineno||'')+':'+(e.colno||''))});
-  window.addEventListener('unhandledrejection',function(e){show('REJ '+((e.reason&&e.reason.message)||e.reason))});
-  setTimeout(function(){if(!window.supabase)show('Supabase library did not load')},4000);
-})();
-</script>
-
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 <script>
 (function(){
@@ -193,7 +163,7 @@ var app=document.getElementById('app');
 var U=null,loaded=false,offline=false,recovery=false,signingUp=false,entering=false,dataLoaded=false;
 var S={name:'',areas:[],goals:{},appearance:null};
 var sessions=[];
-var loadErr='',limit=6,confirmKey=null,confirmClear=false,tab='focus',view='welcome',dur=25,showAll=false,dropping=false,busy=false,checkEmail='';
+var loadErr='',tab='focus',view='welcome',dur=25,showAll=false,dropping=false,busy=false,checkEmail='';
 var run=null,celeb=null;
 var soundOn=lsGet('pebbl.sound')!==false,lastSec=-1,audioCtx=null,saveT=null,toastT=null,savedT=null;
 
@@ -580,7 +550,7 @@ function celebView(){
     +'<h1 class="disp h1" style="margin-bottom:6px">Pebble dropped.</h1><p class="sub" style="margin-bottom:20px">'+KUDOS[c.k%KUDOS.length]+'</p>'
     +'<div style="display:flex;gap:10px;margin-bottom:20px;max-width:100%">'+st(c.mins,'MINUTES')+st(c.area==='Freeform'?'Free':c.area,'AREA')+'</div>'
     +'<textarea id="note" class="field" maxlength="140" placeholder="What did you get done? (optional)" aria-label="What did you get done?" style="margin-bottom:16px">'+esc(c.note||'')+'</textarea>'
-    +'<button class="btn btn-sm" data-act="done">Done</button><button class="link" data-act="share" style="margin-top:12px">Share Pebbl with a friend</button></div>';
+    +'<button class="btn btn-sm" data-act="done">Done</button></div>';
 }
 function focusView(st){return run?activeView():celeb?celebView():preView(st)}
 
@@ -596,12 +566,12 @@ function cairn(a,i,hrs,g){
     +'<div style="font-weight:500;font-size:12.5px;margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+nm+'</div><div style="color:var(--sub);font-size:11px">'+(hrs>0?hrs.toFixed(1):'—')+' / '+g+'h</div></div>';
 }
 function ripplesView(st){
-  var lim=limit;
+  var lim=showAll?60:6;
   var rows=sessions.slice(0,lim).map(function(e){
     var txt=e.notes||e.task;
-    return '<div class="logrow">'+blob(13,10,col(e.area))+'<b>'+esc(areaLabel(e.area))+'</b><span>'+(txt?esc(txt):'—')+'</span><small>'+Math.max(1,Math.round(e.hours*60))+'m · '+when(new Date(e.date).getTime())+(e.pending?' · syncing':'')+'</small><button class="xbtn'+(confirmKey===rk(e)?' on':'')+'" data-act="delrow" data-k="'+esc(rk(e))+'" aria-label="Delete this pebble">'+(confirmKey===rk(e)?'Delete?':'✕')+'</button></div>';
+    return '<div class="logrow">'+blob(13,10,col(e.area))+'<b>'+esc(areaLabel(e.area))+'</b><span>'+(txt?esc(txt):'—')+'</span><small>'+Math.max(1,Math.round(e.hours*60))+'m · '+when(new Date(e.date).getTime())+(e.pending?' · syncing':'')+'</small></div>';
   }).join('')||'<div class="logrow"><span style="white-space:normal">Your pebbles land here once you drop the first one.</span></div>';
-  var more='<div style="display:flex;justify-content:center;gap:8px;margin-top:10px">'+(sessions.length>lim?'<button class="link" data-act="more">Show '+Math.min(20,sessions.length-lim)+' more</button>':'')+(lim>6?'<button class="link" data-act="fewer">Show fewer</button>':'')+'</div>';
+  var more=sessions.length>6?'<button class="link" data-act="more" style="display:block;margin:10px auto 0">'+(showAll?'Show fewer':'Show more')+'</button>':'';
   return '<div style="padding-top:24px"><h1 class="disp h2" style="margin-bottom:16px">Ripples</h1>'
     +'<div style="display:flex;gap:8px;margin-bottom:22px"><div class="stat"><b>'+st.tot.toFixed(1)+'h</b><small>LAST 7 DAYS</small></div><div class="stat"><b>'+st.n+'</b><small>PEBBLES</small></div><div class="stat"><b style="color:var(--ac2)">'+st.streak+'</b><small>DAY RIPPLE</small></div></div>'
     +'<p class="lbl">Your cairns · one stone per hour</p>'
@@ -622,8 +592,6 @@ function youView(st){
     +'<div class="card"><p class="lbl">Sound</p><div class="seg"><button data-act="sound" aria-pressed="'+soundOn+'">Tick &amp; chime: '+(soundOn?'On':'Off')+'</button></div></div>'
     +'<div class="card"><p class="lbl">Your areas</p><div style="display:flex;flex-direction:column;gap:10px">'+rows+'</div><p style="color:var(--ft);font-size:11px;margin:12px 0 0">Call them anything. Past pebbles follow the new name when you leave the field.</p></div>'
     +'<p class="saved" id="savedmsg" role="status"></p>'
-    +'<div class="card"><p class="lbl">Share Pebbl</p><p class="sub" style="font-size:12.5px;margin-bottom:12px">Know someone who stalls before they start?</p><button class="ghost" data-act="share" style="padding:11px 28px">Share Pebbl</button></div>'
-    +'<div class="card"><p class="lbl">Your data</p><div class="dgrid"><div class="seg"><button data-act="dljson">Download JSON</button><button data-act="dlcsv">Download CSV</button></div><button class="ghost" data-act="clearall" style="padding:11px 20px;'+(confirmClear?'border-color:var(--err);color:var(--err)':'')+'">'+(confirmClear?'Tap again to delete all '+sessions.length+' pebbles':'Delete all pebbles')+'</button></div><p style="color:var(--ft);font-size:11px;margin:12px 0 0">Downloads include your name, areas, goals and every pebble. Deleting pebbles can\'t be undone.</p></div>'
     +'<div class="card" style="margin-top:6px"><p class="lbl">Account</p><p class="sub" style="margin-bottom:12px;overflow-wrap:anywhere">'+esc(U?U.email:'')+'</p><button class="ghost" data-act="signout" style="padding:11px 28px">Sign out</button></div></div>';
 }
 function navHTML(){
@@ -637,50 +605,6 @@ function render(){
 }
 
 /* ══ ACTIONS ══ */
-var SHARE={title:'Pebbl',text:'Pebbl is a focus app for the first five ugly minutes, when you\'d rather do anything else. Drop your first pebbl.',url:'https://app.usepebbl.app'};
-async function shareApp(){
-  try{
-    if(navigator.share){await navigator.share(SHARE);return}
-  }catch(e){if(e&&e.name==='AbortError')return}
-  try{await navigator.clipboard.writeText(SHARE.text+' '+SHARE.url);toast('Link copied. Paste it anywhere.')}
-  catch(e){toast(SHARE.url,6000)}
-}
-function rk(e){return String(e.id!=null?e.id:e.localId)}
-async function delRow(k){
-  if(confirmKey!==k){confirmKey=k;render();setTimeout(function(){if(confirmKey===k){confirmKey=null;render()}},4000);return}
-  confirmKey=null;
-  var i=-1;for(var j=0;j<sessions.length;j++)if(rk(sessions[j])===k){i=j;break}
-  if(i<0){render();return}
-  var e=sessions[i];
-  if(e.pending){
-    var pend=(lsGet(uk('pending'))||[]).filter(function(p){return p.localId!==e.localId});lsSet(uk('pending'),pend);
-  }else{
-    var r=await sb.from('sessions').delete().eq('id',e.id).eq('user_id',U.id);
-    if(r.error){console.error(r.error);toast('Couldn\'t delete that one. '+(r.error.message||''),4500);render();return}
-  }
-  sessions.splice(i,1);cacheAll();render();
-}
-async function clearAll(){
-  if(!confirmClear){confirmClear=true;render();setTimeout(function(){if(confirmClear){confirmClear=false;render()}},5000);return}
-  confirmClear=false;
-  var r=await sb.from('sessions').delete().eq('user_id',U.id);
-  if(r.error){console.error(r.error);toast('Couldn\'t delete. '+(r.error.message||''),4500);render();return}
-  lsSet(uk('pending'),[]);sessions=[];limit=6;cacheAll();toast('All pebbles deleted.');render();
-}
-function exportData(kind){
-  var rows=sessions.map(function(e){return {date:e.date,area:areaLabel(e.area),minutes:Math.max(1,Math.round(e.hours*60)),hours:e.hours,notes:e.notes||'',task:e.task||'',completed_full_timer:!!e.pomodoros}});
-  var out,type,ext;
-  if(kind==='json'){
-    out=JSON.stringify({exported_at:new Date().toISOString(),email:U.email,name:S.name,areas:S.areas,weekly_goals:S.goals,appearance:S.appearance,sessions:rows},null,2);type='application/json';ext='json';
-  }else{
-    var head=['date','area','minutes','hours','notes','task','completed_full_timer'];
-    var q=function(v){v=String(v);if(/^[=+\-@\t\r]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'};
-    out=[head.join(',')].concat(rows.map(function(r){return head.map(function(h){return q(r[h])}).join(',')})).join('\r\n');type='text/csv';ext='csv';
-  }
-  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([out],{type:type+';charset=utf-8'}));
-  a.download='pebbl-data-'+new Date().toISOString().slice(0,10)+'.'+ext;document.body.appendChild(a);a.click();
-  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1000);
-}
 async function renameArea(i,input){
   var old=S.areas[i].name,nn=input.value.trim();
   if(!nn||nn===old){input.value=old;return}
@@ -714,13 +638,7 @@ function act(a,d,el){
   else if(a==='resume'){run.endAt=Date.now()+run.remaining*1000;run.running=true;saveRun();holdAwake(true,run.remaining);render()}
   else if(a==='end'){finishRun()}
   else if(a==='done'){saveCelebration()}
-  else if(a==='more'){limit+=20;render()}
-  else if(a==='fewer'){limit=6;render()}
-  else if(a==='delrow'){delRow(d.k)}
-  else if(a==='clearall'){clearAll()}
-  else if(a==='share'){shareApp()}
-  else if(a==='dljson'){exportData('json')}
-  else if(a==='dlcsv'){exportData('csv')}
+  else if(a==='more'){showAll=!showAll;render()}
   else if(a==='theme'){S.appearance=d.t;lsSet('appearance',d.t);applyAppearance(d.t);render();scheduleSave()}
   else if(a==='sound'){soundOn=!soundOn;lsSet('pebbl.sound',soundOn);if(soundOn){initAudio();tick()}if(run&&run.running)holdAwake(true,remaining());render()}
   else if(a==='retry'){retryLoad()}
@@ -774,13 +692,12 @@ async function init(){
   var r=await sb.auth.getSession(),session=r.data&&r.data.session;
   if(session&&!recovery){U=session.user;await enterApp()}
   else render();
-  sb.auth.onAuthStateChange(function(ev,sess){
+  sb.auth.onAuthStateChange(async function(ev,sess){
     if(ev==='PASSWORD_RECOVERY'){recovery=true;render()}
     else if(ev==='SIGNED_IN'&&sess){
       if(recovery||signingUp)return;
       U=sess.user;
-      // Never await Supabase calls inside this callback: it deadlocks sign-in. Defer instead.
-      if(!dataLoaded)setTimeout(function(){enterApp()},0);
+      if(!dataLoaded)await enterApp();
     }
     else if(ev==='SIGNED_OUT'){resetState();view='signin';render()}
   });
